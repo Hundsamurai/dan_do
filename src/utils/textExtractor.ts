@@ -1,4 +1,4 @@
-import { Notice } from 'obsidian';
+import { Notice, requestUrl } from 'obsidian';
 
 export class TextExtractor {
 	static async extractFromUrl(url: string): Promise<string> {
@@ -14,28 +14,30 @@ export class TextExtractor {
 		}
 
 		try {
-			console.log('[TextExtractor] Fetching URL...');
-			const response = await fetch(url, {
+			console.log('[TextExtractor] Fetching URL with requestUrl...');
+			const response = await requestUrl({
+				url: url,
+				method: 'GET',
 				headers: {
 					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 				}
 			});
 			
-			console.log('[TextExtractor] Response status:', response.status, response.statusText);
+			console.log('[TextExtractor] Response status:', response.status);
 			
-			if (!response.ok) {
-				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			if (response.status !== 200) {
+				throw new Error(`HTTP ${response.status}`);
 			}
 			
-			const contentType = response.headers.get('content-type');
+			const contentType = response.headers['content-type'] || '';
 			console.log('[TextExtractor] Content-Type:', contentType);
 			
-			if (!contentType || !contentType.includes('text/html')) {
-				throw new Error('URL does not point to an HTML page');
+			if (!contentType.includes('text/html')) {
+				console.warn('[TextExtractor] Content-Type is not HTML, but continuing...');
 			}
 			
 			console.log('[TextExtractor] Fetching HTML content...');
-			const html = await response.text();
+			const html = response.text;
 			console.log('[TextExtractor] HTML length:', html.length);
 			
 			console.log('[TextExtractor] Parsing HTML...');
@@ -154,5 +156,3 @@ export class TextExtractor {
 		return extractedText;
 	}
 }
-
-

@@ -1,4 +1,4 @@
-import { Notice } from 'obsidian';
+import { Notice, requestUrl } from 'obsidian';
 
 interface TranscriptItem {
 	text: string;
@@ -28,16 +28,19 @@ export class YouTubeTranscript {
 		
 		try {
 			// Fetch video page to get transcript data
-			console.log('[YouTubeTranscript] Fetching video page...');
-			const videoPageResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
+			console.log('[YouTubeTranscript] Fetching video page with requestUrl...');
+			const videoPageResponse = await requestUrl({
+				url: `https://www.youtube.com/watch?v=${videoId}`,
+				method: 'GET'
+			});
 			
 			console.log('[YouTubeTranscript] Video page response status:', videoPageResponse.status);
 			
-			if (!videoPageResponse.ok) {
+			if (videoPageResponse.status !== 200) {
 				throw new Error('Failed to fetch video page');
 			}
 
-			const videoPageHtml = await videoPageResponse.text();
+			const videoPageHtml = videoPageResponse.text;
 			console.log('[YouTubeTranscript] Video page HTML length:', videoPageHtml.length);
 
 			// Extract captions URL from page
@@ -87,15 +90,19 @@ export class YouTubeTranscript {
 			console.log('[YouTubeTranscript] Caption URL:', captionTrack.baseUrl.substring(0, 100));
 
 			// Fetch the actual transcript
-			console.log('[YouTubeTranscript] Fetching transcript XML...');
-			const transcriptResponse = await fetch(captionTrack.baseUrl);
+			console.log('[YouTubeTranscript] Fetching transcript XML with requestUrl...');
+			const transcriptResponse = await requestUrl({
+				url: captionTrack.baseUrl,
+				method: 'GET'
+			});
+			
 			console.log('[YouTubeTranscript] Transcript response status:', transcriptResponse.status);
 			
-			if (!transcriptResponse.ok) {
+			if (transcriptResponse.status !== 200) {
 				throw new Error('Failed to fetch transcript');
 			}
 
-			const transcriptXml = await transcriptResponse.text();
+			const transcriptXml = transcriptResponse.text;
 			console.log('[YouTubeTranscript] Transcript XML length:', transcriptXml.length);
 			console.log('[YouTubeTranscript] First 500 chars of XML:', transcriptXml.substring(0, 500));
 			

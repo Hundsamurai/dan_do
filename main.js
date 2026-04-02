@@ -27,7 +27,7 @@ __export(main_exports, {
   default: () => ReadingCoachPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian6 = require("obsidian");
+var import_obsidian8 = require("obsidian");
 
 // src/settings.ts
 var import_obsidian = require("obsidian");
@@ -552,9 +552,10 @@ var ConnectionFinderMode = class {
 };
 
 // src/views/sourceInputModal.ts
-var import_obsidian5 = require("obsidian");
+var import_obsidian7 = require("obsidian");
 
 // src/utils/textExtractor.ts
+var import_obsidian5 = require("obsidian");
 var TextExtractor = class {
   static async extractFromUrl(url) {
     console.log("[TextExtractor] Starting extraction from URL:", url);
@@ -566,23 +567,25 @@ var TextExtractor = class {
       throw new Error("Invalid URL format");
     }
     try {
-      console.log("[TextExtractor] Fetching URL...");
-      const response = await fetch(url, {
+      console.log("[TextExtractor] Fetching URL with requestUrl...");
+      const response = await (0, import_obsidian5.requestUrl)({
+        url,
+        method: "GET",
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
       });
-      console.log("[TextExtractor] Response status:", response.status, response.statusText);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      console.log("[TextExtractor] Response status:", response.status);
+      if (response.status !== 200) {
+        throw new Error(`HTTP ${response.status}`);
       }
-      const contentType = response.headers.get("content-type");
+      const contentType = response.headers["content-type"] || "";
       console.log("[TextExtractor] Content-Type:", contentType);
-      if (!contentType || !contentType.includes("text/html")) {
-        throw new Error("URL does not point to an HTML page");
+      if (!contentType.includes("text/html")) {
+        console.warn("[TextExtractor] Content-Type is not HTML, but continuing...");
       }
       console.log("[TextExtractor] Fetching HTML content...");
-      const html = await response.text();
+      const html = response.text;
       console.log("[TextExtractor] HTML length:", html.length);
       console.log("[TextExtractor] Parsing HTML...");
       const text = this.parseHtml(html);
@@ -658,6 +661,7 @@ var TextExtractor = class {
 };
 
 // src/utils/youtubeTranscript.ts
+var import_obsidian6 = require("obsidian");
 var YouTubeTranscript = class {
   static extractVideoId(url) {
     console.log("[YouTubeTranscript] Extracting video ID from:", url);
@@ -674,13 +678,16 @@ var YouTubeTranscript = class {
   static async fetchTranscript(videoId, lang = "en") {
     console.log("[YouTubeTranscript] Fetching transcript for video:", videoId, "language:", lang);
     try {
-      console.log("[YouTubeTranscript] Fetching video page...");
-      const videoPageResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
+      console.log("[YouTubeTranscript] Fetching video page with requestUrl...");
+      const videoPageResponse = await (0, import_obsidian6.requestUrl)({
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        method: "GET"
+      });
       console.log("[YouTubeTranscript] Video page response status:", videoPageResponse.status);
-      if (!videoPageResponse.ok) {
+      if (videoPageResponse.status !== 200) {
         throw new Error("Failed to fetch video page");
       }
-      const videoPageHtml = await videoPageResponse.text();
+      const videoPageHtml = videoPageResponse.text;
       console.log("[YouTubeTranscript] Video page HTML length:", videoPageHtml.length);
       console.log("[YouTubeTranscript] Looking for captions data...");
       const captionsMatch = videoPageHtml.match(/"captions":\s*({[^}]+})/);
@@ -721,13 +728,16 @@ var YouTubeTranscript = class {
       }
       console.log("[YouTubeTranscript] Selected caption track:", captionTrack.languageCode);
       console.log("[YouTubeTranscript] Caption URL:", captionTrack.baseUrl.substring(0, 100));
-      console.log("[YouTubeTranscript] Fetching transcript XML...");
-      const transcriptResponse = await fetch(captionTrack.baseUrl);
+      console.log("[YouTubeTranscript] Fetching transcript XML with requestUrl...");
+      const transcriptResponse = await (0, import_obsidian6.requestUrl)({
+        url: captionTrack.baseUrl,
+        method: "GET"
+      });
       console.log("[YouTubeTranscript] Transcript response status:", transcriptResponse.status);
-      if (!transcriptResponse.ok) {
+      if (transcriptResponse.status !== 200) {
         throw new Error("Failed to fetch transcript");
       }
-      const transcriptXml = await transcriptResponse.text();
+      const transcriptXml = transcriptResponse.text;
       console.log("[YouTubeTranscript] Transcript XML length:", transcriptXml.length);
       console.log("[YouTubeTranscript] First 500 chars of XML:", transcriptXml.substring(0, 500));
       console.log("[YouTubeTranscript] Parsing transcript XML...");
@@ -783,7 +793,7 @@ var YouTubeTranscript = class {
 YouTubeTranscript.YOUTUBE_REGEX = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/;
 
 // src/views/sourceInputModal.ts
-var SourceInputModal = class extends import_obsidian5.Modal {
+var SourceInputModal = class extends import_obsidian7.Modal {
   constructor(app, onSubmit) {
     super(app);
     this.urlInput = "";
@@ -800,7 +810,7 @@ var SourceInputModal = class extends import_obsidian5.Modal {
       text: "Enter a URL (article or YouTube video) or paste the source text directly.",
       cls: "setting-item-description"
     });
-    new import_obsidian5.Setting(contentEl).setName("URL").setDesc("Article URL or YouTube video link").addText((text) => {
+    new import_obsidian7.Setting(contentEl).setName("URL").setDesc("Article URL or YouTube video link").addText((text) => {
       text.setPlaceholder("https://example.com/article or https://youtube.com/watch?v=...").setValue(this.urlInput).onChange((value) => {
         this.urlInput = value;
       });
@@ -814,7 +824,7 @@ var SourceInputModal = class extends import_obsidian5.Modal {
     });
     divider.style.textAlign = "center";
     divider.style.margin = "1em 0";
-    new import_obsidian5.Setting(contentEl).setName("Source Text").setDesc("Paste the source text directly (or parsed from URL above)").addTextArea((text) => {
+    new import_obsidian7.Setting(contentEl).setName("Source Text").setDesc("Paste the source text directly (or parsed from URL above)").addTextArea((text) => {
       this.textAreaComponent = text;
       text.setPlaceholder("Paste source text here...").setValue(this.textInput).onChange((value) => {
         this.textInput = value;
@@ -822,7 +832,7 @@ var SourceInputModal = class extends import_obsidian5.Modal {
       text.inputEl.rows = 12;
       text.inputEl.style.width = "100%";
     });
-    new import_obsidian5.Setting(contentEl).addButton((btn) => btn.setButtonText("Cancel").onClick(() => {
+    new import_obsidian7.Setting(contentEl).addButton((btn) => btn.setButtonText("Cancel").onClick(() => {
       this.close();
     })).addButton((btn) => btn.setButtonText("Analyze").setCta().setDisabled(this.isProcessing).onClick(async () => {
       await this.handleSubmit();
@@ -830,7 +840,7 @@ var SourceInputModal = class extends import_obsidian5.Modal {
   }
   async handleUrlParse() {
     if (!this.urlInput.trim()) {
-      new import_obsidian5.Notice("Please enter a URL");
+      new import_obsidian7.Notice("Please enter a URL");
       return;
     }
     const url = this.urlInput.trim();
@@ -839,28 +849,28 @@ var SourceInputModal = class extends import_obsidian5.Modal {
     try {
       if (YouTubeTranscript.isYouTubeUrl(url)) {
         console.log("[SourceInputModal] Detected YouTube URL");
-        new import_obsidian5.Notice("Fetching YouTube transcript...");
+        new import_obsidian7.Notice("Fetching YouTube transcript...");
         const transcript = await YouTubeTranscript.getTranscriptFromUrl(url);
         console.log("[SourceInputModal] YouTube transcript received, length:", transcript.length);
         this.textInput = transcript;
         if (this.textAreaComponent) {
           this.textAreaComponent.setValue(transcript);
         }
-        new import_obsidian5.Notice(`\u2713 Extracted ${transcript.length} characters from YouTube video`);
+        new import_obsidian7.Notice(`\u2713 Extracted ${transcript.length} characters from YouTube video`);
       } else {
         console.log("[SourceInputModal] Detected article URL");
-        new import_obsidian5.Notice("Fetching article from URL...");
+        new import_obsidian7.Notice("Fetching article from URL...");
         const sourceText = await TextExtractor.extractFromUrl(url);
         console.log("[SourceInputModal] Article text received, length:", sourceText.length);
         this.textInput = sourceText;
         if (this.textAreaComponent) {
           this.textAreaComponent.setValue(sourceText);
         }
-        new import_obsidian5.Notice(`\u2713 Extracted ${sourceText.length} characters from article`);
+        new import_obsidian7.Notice(`\u2713 Extracted ${sourceText.length} characters from article`);
       }
     } catch (error) {
       console.error("[SourceInputModal] Error during URL parse:", error);
-      new import_obsidian5.Notice(`Error: ${error.message}`);
+      new import_obsidian7.Notice(`Error: ${error.message}`);
     } finally {
       this.isProcessing = false;
       console.log("[SourceInputModal] URL parse completed");
@@ -877,7 +887,7 @@ var SourceInputModal = class extends import_obsidian5.Modal {
       const sourceText = TextExtractor.extractFromText(this.textInput.trim());
       if (sourceText.length < 50) {
         console.log("[SourceInputModal] Text too short:", sourceText.length);
-        new import_obsidian5.Notice("Source text is too short. Please provide more content.");
+        new import_obsidian7.Notice("Source text is too short. Please provide more content.");
         return;
       }
       console.log("[SourceInputModal] Submitting source text, length:", sourceText.length);
@@ -885,7 +895,7 @@ var SourceInputModal = class extends import_obsidian5.Modal {
       this.onSubmit(sourceText);
     } else {
       console.log("[SourceInputModal] No text provided");
-      new import_obsidian5.Notice("Please provide source text or parse a URL first");
+      new import_obsidian7.Notice("Please provide source text or parse a URL first");
     }
   }
   onClose() {
@@ -895,13 +905,13 @@ var SourceInputModal = class extends import_obsidian5.Modal {
 };
 
 // main.ts
-var ReadingCoachPlugin = class extends import_obsidian6.Plugin {
+var ReadingCoachPlugin = class extends import_obsidian8.Plugin {
   async onload() {
     await this.loadSettings();
     this.depthCheckMode = new DepthCheckMode(this);
     this.connectionFinderMode = new ConnectionFinderMode(this);
     this.addRibbonIcon("book-open", "Reading Coach", () => {
-      new import_obsidian6.Notice("Reading Coach: Use command palette to select a mode");
+      new import_obsidian8.Notice("Reading Coach: Use command palette to select a mode");
     });
     this.addCommand({
       id: "depth-check",
@@ -930,14 +940,14 @@ var ReadingCoachPlugin = class extends import_obsidian6.Plugin {
     await this.saveData(this.settings);
   }
   async runDepthCheck() {
-    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian6.MarkdownView);
+    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian8.MarkdownView);
     if (!activeView) {
-      new import_obsidian6.Notice("Please open a note first");
+      new import_obsidian8.Notice("Please open a note first");
       return;
     }
     const userNotes = activeView.editor.getValue();
     if (!userNotes) {
-      new import_obsidian6.Notice("Current note is empty");
+      new import_obsidian8.Notice("Current note is empty");
       return;
     }
     new SourceInputModal(this.app, async (sourceText) => {
@@ -945,14 +955,14 @@ var ReadingCoachPlugin = class extends import_obsidian6.Plugin {
     }).open();
   }
   async runConnectionFinder() {
-    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian6.MarkdownView);
+    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian8.MarkdownView);
     if (!activeView) {
-      new import_obsidian6.Notice("Please open a note first");
+      new import_obsidian8.Notice("Please open a note first");
       return;
     }
     const userNotes = activeView.editor.getValue();
     if (!userNotes) {
-      new import_obsidian6.Notice("Current note is empty");
+      new import_obsidian8.Notice("Current note is empty");
       return;
     }
     new SourceInputModal(this.app, async (sourceText) => {
