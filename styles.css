@@ -1,0 +1,19 @@
+/* Reading Coach Plugin Styles */
+
+.reading-coach-container {
+	padding: 1em;
+}
+
+.reading-coach-header {
+	margin-bottom: 1em;
+	border-bottom: 1px solid var(--background-modifier-border);
+	padding-bottom: 0.5em;
+}
+
+.reading-coach-content {
+	line-height: 1.6;
+}
+
+.reading-coach-button {
+	margin: 0.5em 0;
+}
