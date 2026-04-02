@@ -24,6 +24,113 @@
 	font-weight: 500;
 }
 
+/* Modal Styles */
+.reading-coach-modal {
+	padding: 0;
+}
+
+.reading-coach-modal .modal-content {
+	padding: 0;
+}
+
+.reading-coach-modal-header {
+	padding: 1.5em 2em 1em 2em;
+	border-bottom: 2px solid var(--background-modifier-border);
+	background-color: var(--background-secondary);
+}
+
+.reading-coach-modal-header h2 {
+	margin: 0;
+	color: var(--text-normal);
+	font-size: 1.5em;
+}
+
+.reading-coach-modal-content {
+	padding: 2em;
+	max-height: 60vh;
+	overflow-y: auto;
+	line-height: 1.6;
+}
+
+.reading-coach-modal-content h1,
+.reading-coach-modal-content h2,
+.reading-coach-modal-content h3 {
+	margin-top: 1.5em;
+	margin-bottom: 0.5em;
+	color: var(--text-accent);
+}
+
+.reading-coach-modal-content h1 {
+	font-size: 1.4em;
+	border-bottom: 1px solid var(--background-modifier-border);
+	padding-bottom: 0.3em;
+}
+
+.reading-coach-modal-content h2 {
+	font-size: 1.2em;
+}
+
+.reading-coach-modal-content h3 {
+	font-size: 1.1em;
+}
+
+.reading-coach-modal-content ul,
+.reading-coach-modal-content ol {
+	padding-left: 2em;
+	margin: 0.5em 0;
+}
+
+.reading-coach-modal-content li {
+	margin: 0.3em 0;
+}
+
+.reading-coach-modal-content p {
+	margin: 0.8em 0;
+}
+
+.reading-coach-modal-content strong {
+	color: var(--text-accent);
+	font-weight: 600;
+}
+
+.reading-coach-modal-content em {
+	color: var(--text-muted);
+}
+
+.reading-coach-modal-content code {
+	background-color: var(--background-secondary);
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-family: var(--font-monospace);
+	font-size: 0.9em;
+}
+
+.reading-coach-modal-content pre {
+	background-color: var(--background-secondary);
+	padding: 1em;
+	border-radius: 4px;
+	overflow-x: auto;
+}
+
+.reading-coach-modal-content blockquote {
+	border-left: 3px solid var(--text-accent);
+	padding-left: 1em;
+	margin: 1em 0;
+	color: var(--text-muted);
+	font-style: italic;
+}
+
+.reading-coach-modal-footer {
+	padding: 1em 2em;
+	border-top: 1px solid var(--background-modifier-border);
+	text-align: right;
+	background-color: var(--background-secondary);
+}
+
+.reading-coach-modal-footer button {
+	padding: 0.5em 1.5em;
+}
+
 .reading-coach-result {
 	max-height: 70vh;
 	overflow-y: auto;

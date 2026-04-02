@@ -14,7 +14,7 @@ Analyze the depth of understanding demonstrated in the notes. Provide:
 3. Areas needing deeper exploration
 4. Specific suggestions for improvement
 
-Format your response as a structured analysis.`;
+Respond in the same language as the source text and notes. Format your response as a structured analysis.`;
 	},
 
 	connectionFinder: (sourceText: string, userNotes: string, vaultNotes: string[]): string => {
@@ -35,6 +35,6 @@ Identify:
 3. Suggestions for creating new connections
 4. Conceptual bridges between current and existing knowledge
 
-Format your response as a connection map.`;
+Respond in the same language as the source text and notes. Format your response as a connection map.`;
 	}
 };

@@ -4,6 +4,7 @@ import { AIProvider } from '../ai/provider';
 import { Prompts } from '../ai/prompts';
 import { ResultModal } from '../views/resultModal';
 import { VaultScanner } from '../utils/vaultScanner';
+import { LanguageDetector } from '../utils/languageDetector';
 
 export class ConnectionFinderMode {
 	constructor(private plugin: ReadingCoachPlugin) {}
@@ -20,8 +21,13 @@ export class ConnectionFinderMode {
 		const scanner = new VaultScanner(this.plugin.app);
 		const vaultNotes = await scanner.getAllNoteTitles();
 
+		// Auto-detect language from content
+		const detectedLang = LanguageDetector.detectFromBoth(sourceText, userNotes);
+		const lang = this.plugin.settings.promptLanguage === 'auto' 
+			? detectedLang 
+			: this.plugin.settings.promptLanguage;
+
 		const provider = new AIProvider(this.plugin.settings);
-		const lang = this.plugin.settings.promptLanguage;
 		const customPrompt = lang === 'ru' 
 			? this.plugin.settings.customPrompts.connectionFinderRU 
 			: this.plugin.settings.customPrompts.connectionFinderEN;

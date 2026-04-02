@@ -49,7 +49,7 @@ Analyze the depth of understanding demonstrated in the notes. Provide:
 3. Areas needing deeper exploration
 4. Specific suggestions for improvement
 
-Format your response as a structured analysis.`;
+Respond in the same language as the source text and notes. Format your response as a structured analysis.`;
   },
   connectionFinder: (sourceText, userNotes, vaultNotes) => {
     return `You are a reading comprehension coach. Find connections between the user's current notes and their existing vault notes.
@@ -69,7 +69,7 @@ Identify:
 3. Suggestions for creating new connections
 4. Conceptual bridges between current and existing knowledge
 
-Format your response as a connection map.`;
+Respond in the same language as the source text and notes. Format your response as a connection map.`;
   }
 };
 
@@ -90,7 +90,7 @@ ${userNotes}
 3. \u041E\u0431\u043B\u0430\u0441\u0442\u0438, \u0442\u0440\u0435\u0431\u0443\u044E\u0449\u0438\u0435 \u0431\u043E\u043B\u0435\u0435 \u0433\u043B\u0443\u0431\u043E\u043A\u043E\u0433\u043E \u0438\u0437\u0443\u0447\u0435\u043D\u0438\u044F
 4. \u041A\u043E\u043D\u043A\u0440\u0435\u0442\u043D\u044B\u0435 \u0440\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u0430\u0446\u0438\u0438 \u043F\u043E \u0443\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u044E
 
-\u041E\u0444\u043E\u0440\u043C\u0438 \u043E\u0442\u0432\u0435\u0442 \u0432 \u0432\u0438\u0434\u0435 \u0441\u0442\u0440\u0443\u043A\u0442\u0443\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u0433\u043E \u0430\u043D\u0430\u043B\u0438\u0437\u0430.`;
+\u041E\u0442\u0432\u0435\u0447\u0430\u0439 \u043D\u0430 \u0442\u043E\u043C \u0436\u0435 \u044F\u0437\u044B\u043A\u0435, \u0447\u0442\u043E \u0438 \u0438\u0441\u0445\u043E\u0434\u043D\u044B\u0439 \u0442\u0435\u043A\u0441\u0442 \u0441 \u0437\u0430\u043C\u0435\u0442\u043A\u0430\u043C\u0438. \u041E\u0444\u043E\u0440\u043C\u0438 \u043E\u0442\u0432\u0435\u0442 \u0432 \u0432\u0438\u0434\u0435 \u0441\u0442\u0440\u0443\u043A\u0442\u0443\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u0433\u043E \u0430\u043D\u0430\u043B\u0438\u0437\u0430.`;
   },
   connectionFinder: (sourceText, userNotes, vaultNotes) => {
     return `\u0422\u044B \u2014 \u0442\u0440\u0435\u043D\u0435\u0440 \u043F\u043E \u043F\u043E\u043D\u0438\u043C\u0430\u043D\u0438\u044E \u043F\u0440\u043E\u0447\u0438\u0442\u0430\u043D\u043D\u043E\u0433\u043E. \u041D\u0430\u0439\u0434\u0438 \u0441\u0432\u044F\u0437\u0438 \u043C\u0435\u0436\u0434\u0443 \u0442\u0435\u043A\u0443\u0449\u0438\u043C\u0438 \u0437\u0430\u043C\u0435\u0442\u043A\u0430\u043C\u0438 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0438 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0438\u043C\u0438 \u0437\u0430\u043C\u0435\u0442\u043A\u0430\u043C\u0438 \u0432 \u0445\u0440\u0430\u043D\u0438\u043B\u0438\u0449\u0435.
@@ -110,13 +110,13 @@ ${vaultNotes.join("\n")}
 3. \u041F\u0440\u0435\u0434\u043B\u043E\u0436\u0435\u043D\u0438\u044F \u043F\u043E \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044E \u043D\u043E\u0432\u044B\u0445 \u0441\u0432\u044F\u0437\u0435\u0439
 4. \u041A\u043E\u043D\u0446\u0435\u043F\u0442\u0443\u0430\u043B\u044C\u043D\u044B\u0435 \u043C\u043E\u0441\u0442\u044B \u043C\u0435\u0436\u0434\u0443 \u0442\u0435\u043A\u0443\u0449\u0438\u043C\u0438 \u0438 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0438\u043C\u0438 \u0437\u043D\u0430\u043D\u0438\u044F\u043C\u0438
 
-\u041E\u0444\u043E\u0440\u043C\u0438 \u043E\u0442\u0432\u0435\u0442 \u0432 \u0432\u0438\u0434\u0435 \u043A\u0430\u0440\u0442\u044B \u0441\u0432\u044F\u0437\u0435\u0439.`;
+\u041E\u0442\u0432\u0435\u0447\u0430\u0439 \u043D\u0430 \u0442\u043E\u043C \u0436\u0435 \u044F\u0437\u044B\u043A\u0435, \u0447\u0442\u043E \u0438 \u0438\u0441\u0445\u043E\u0434\u043D\u044B\u0439 \u0442\u0435\u043A\u0441\u0442 \u0441 \u0437\u0430\u043C\u0435\u0442\u043A\u0430\u043C\u0438. \u041E\u0444\u043E\u0440\u043C\u0438 \u043E\u0442\u0432\u0435\u0442 \u0432 \u0432\u0438\u0434\u0435 \u043A\u0430\u0440\u0442\u044B \u0441\u0432\u044F\u0437\u0435\u0439.`;
   }
 };
 
 // src/settings.ts
 var DEFAULT_SETTINGS = {
-  promptLanguage: "en",
+  promptLanguage: "auto",
   customPrompts: {
     depthCheckEN: "",
     depthCheckRU: "",
@@ -145,7 +145,7 @@ var ReadingCoachSettingTab = class extends import_obsidian.PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     containerEl.createEl("h2", { text: "Reading Coach Settings" });
-    new import_obsidian.Setting(containerEl).setName("Prompt Language").setDesc("Language for AI prompts").addDropdown((dropdown) => dropdown.addOption("en", "English").addOption("ru", "\u0420\u0443\u0441\u0441\u043A\u0438\u0439").setValue(this.plugin.settings.promptLanguage).onChange(async (value) => {
+    new import_obsidian.Setting(containerEl).setName("Prompt Language").setDesc("Language for AI prompts (Auto detects from content)").addDropdown((dropdown) => dropdown.addOption("auto", "Auto-detect").addOption("en", "English").addOption("ru", "\u0420\u0443\u0441\u0441\u043A\u0438\u0439").setValue(this.plugin.settings.promptLanguage).onChange(async (value) => {
       this.plugin.settings.promptLanguage = value;
       await this.plugin.saveSettings();
     }));
@@ -438,15 +438,46 @@ var ResultModal = class extends import_obsidian2.Modal {
   onOpen() {
     const { contentEl } = this;
     contentEl.empty();
-    contentEl.createEl("h2", { text: this.title });
-    const contentDiv = contentEl.createDiv({ cls: "reading-coach-result" });
-    contentDiv.createEl("pre", { text: this.content });
+    contentEl.addClass("reading-coach-modal");
+    const header = contentEl.createDiv({ cls: "reading-coach-modal-header" });
+    header.createEl("h2", { text: this.title });
+    const contentDiv = contentEl.createDiv({ cls: "reading-coach-modal-content" });
+    import_obsidian2.MarkdownRenderer.renderMarkdown(
+      this.content,
+      contentDiv,
+      "",
+      null
+    );
+    const footer = contentEl.createDiv({ cls: "reading-coach-modal-footer" });
+    const closeBtn = footer.createEl("button", { text: "Close", cls: "mod-cta" });
+    closeBtn.addEventListener("click", () => {
+      this.close();
+    });
   }
   onClose() {
     const { contentEl } = this;
     contentEl.empty();
   }
 };
+
+// src/utils/languageDetector.ts
+var LanguageDetector = class {
+  static detect(text) {
+    const cyrillicCount = (text.match(/[\u0400-\u04FF]/g) || []).length;
+    const latinCount = (text.match(/[a-zA-Z]/g) || []).length;
+    return cyrillicCount > latinCount ? "ru" : "en";
+  }
+  static detectFromBoth(sourceText, userNotes) {
+    const sourceLang = this.detect(sourceText);
+    const notesLang = this.detect(userNotes);
+    if (sourceLang === notesLang) {
+      return sourceLang;
+    }
+    return sourceLang;
+  }
+};
+LanguageDetector.CYRILLIC_PATTERN = /[\u0400-\u04FF]/;
+LanguageDetector.LATIN_PATTERN = /[a-zA-Z]/;
 
 // src/modes/depthCheck.ts
 var DepthCheckMode = class {
@@ -459,8 +490,9 @@ var DepthCheckMode = class {
       return;
     }
     new import_obsidian3.Notice("Analyzing depth of understanding...");
+    const detectedLang = LanguageDetector.detectFromBoth(sourceText, userNotes);
+    const lang = this.plugin.settings.promptLanguage === "auto" ? detectedLang : this.plugin.settings.promptLanguage;
     const provider = new AIProvider(this.plugin.settings);
-    const lang = this.plugin.settings.promptLanguage;
     const customPrompt = lang === "ru" ? this.plugin.settings.customPrompts.depthCheckRU : this.plugin.settings.customPrompts.depthCheckEN;
     const prompt = Prompts.depthCheck(sourceText, userNotes, lang, customPrompt);
     const response = await provider.generate(prompt);
@@ -505,8 +537,9 @@ var ConnectionFinderMode = class {
     new import_obsidian4.Notice("Scanning vault and finding connections...");
     const scanner = new VaultScanner(this.plugin.app);
     const vaultNotes = await scanner.getAllNoteTitles();
+    const detectedLang = LanguageDetector.detectFromBoth(sourceText, userNotes);
+    const lang = this.plugin.settings.promptLanguage === "auto" ? detectedLang : this.plugin.settings.promptLanguage;
     const provider = new AIProvider(this.plugin.settings);
-    const lang = this.plugin.settings.promptLanguage;
     const customPrompt = lang === "ru" ? this.plugin.settings.customPrompts.connectionFinderRU : this.plugin.settings.customPrompts.connectionFinderEN;
     const prompt = Prompts.connectionFinder(sourceText, userNotes, vaultNotes, lang, customPrompt);
     const response = await provider.generate(prompt);
@@ -532,7 +565,7 @@ var TextExtractor = class {
     try {
       const response = await fetch(url, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (compatible; ReadingCoach/1.0)"
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
       });
       if (!response.ok) {
@@ -556,19 +589,45 @@ var TextExtractor = class {
     return text.trim();
   }
   static parseHtml(html) {
-    let text = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "").replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "").replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, "");
+    let text = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "").replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "").replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, "").replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, "").replace(/<header[^>]*>[\s\S]*?<\/header>/gi, "").replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, "").replace(/<aside[^>]*>[\s\S]*?<\/aside>/gi, "");
+    let extractedText = "";
     const articleMatch = text.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
-    const mainMatch = text.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
-    const contentMatch = text.match(/<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
     if (articleMatch) {
-      text = articleMatch[1];
-    } else if (mainMatch) {
-      text = mainMatch[1];
-    } else if (contentMatch) {
-      text = contentMatch[1];
+      extractedText = articleMatch[1];
     }
-    text = text.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
-    return text;
+    if (!extractedText) {
+      const mainMatch = text.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
+      if (mainMatch) {
+        extractedText = mainMatch[1];
+      }
+    }
+    if (!extractedText) {
+      const patterns = [
+        /<div[^>]*class="[^"]*article[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+        /<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+        /<div[^>]*class="[^"]*post[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+        /<div[^>]*class="[^"]*entry[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+        /<div[^>]*class="[^"]*text[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+        /<div[^>]*itemprop="articleBody"[^>]*>([\s\S]*?)<\/div>/i
+      ];
+      for (const pattern of patterns) {
+        const match = text.match(pattern);
+        if (match && match[1].length > 200) {
+          extractedText = match[1];
+          break;
+        }
+      }
+    }
+    if (!extractedText) {
+      const bodyMatch = text.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      if (bodyMatch) {
+        extractedText = bodyMatch[1];
+      } else {
+        extractedText = text;
+      }
+    }
+    extractedText = extractedText.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&mdash;/g, "\u2014").replace(/&ndash;/g, "\u2013").replace(/&hellip;/g, "\u2026").replace(/&#\d+;/g, "").replace(/&[a-z]+;/gi, " ").replace(/\s+/g, " ").trim();
+    return extractedText;
   }
 };
 

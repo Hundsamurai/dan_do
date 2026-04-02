@@ -3,6 +3,7 @@ import type ReadingCoachPlugin from '../../main';
 import { AIProvider } from '../ai/provider';
 import { Prompts } from '../ai/prompts';
 import { ResultModal } from '../views/resultModal';
+import { LanguageDetector } from '../utils/languageDetector';
 
 export class DepthCheckMode {
 	constructor(private plugin: ReadingCoachPlugin) {}
@@ -15,8 +16,13 @@ export class DepthCheckMode {
 
 		new Notice('Analyzing depth of understanding...');
 
+		// Auto-detect language from content
+		const detectedLang = LanguageDetector.detectFromBoth(sourceText, userNotes);
+		const lang = this.plugin.settings.promptLanguage === 'auto' 
+			? detectedLang 
+			: this.plugin.settings.promptLanguage;
+
 		const provider = new AIProvider(this.plugin.settings);
-		const lang = this.plugin.settings.promptLanguage;
 		const customPrompt = lang === 'ru' 
 			? this.plugin.settings.customPrompts.depthCheckRU 
 			: this.plugin.settings.customPrompts.depthCheckEN;

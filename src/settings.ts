@@ -5,7 +5,7 @@ import { PromptsRU } from './ai/prompts/ru';
 
 export interface ReadingCoachSettings {
 	// Prompt Language
-	promptLanguage: 'en' | 'ru';
+	promptLanguage: 'en' | 'ru' | 'auto';
 	
 	// Custom Prompts
 	customPrompts: {
@@ -43,7 +43,7 @@ export interface ReadingCoachSettings {
 }
 
 export const DEFAULT_SETTINGS: ReadingCoachSettings = {
-	promptLanguage: 'en',
+	promptLanguage: 'auto',
 	customPrompts: {
 		depthCheckEN: '',
 		depthCheckRU: '',
@@ -81,8 +81,9 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 		// Prompt Language selection
 		new Setting(containerEl)
 			.setName('Prompt Language')
-			.setDesc('Language for AI prompts')
+			.setDesc('Language for AI prompts (Auto detects from content)')
 			.addDropdown(dropdown => dropdown
+				.addOption('auto', 'Auto-detect')
 				.addOption('en', 'English')
 				.addOption('ru', 'Русский')
 				.setValue(this.plugin.settings.promptLanguage)
