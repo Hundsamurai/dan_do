@@ -90,14 +90,17 @@ export class SourceInputModal extends Modal {
 		}
 
 		const url = this.urlInput.trim();
+		console.log('[SourceInputModal] Starting URL parse for:', url);
 		this.isProcessing = true;
 
 		try {
 			// Check if it's a YouTube URL
 			if (YouTubeTranscript.isYouTubeUrl(url)) {
+				console.log('[SourceInputModal] Detected YouTube URL');
 				new Notice('Fetching YouTube transcript...');
 				const transcript = await YouTubeTranscript.getTranscriptFromUrl(url);
 				
+				console.log('[SourceInputModal] YouTube transcript received, length:', transcript.length);
 				this.textInput = transcript;
 				if (this.textAreaComponent) {
 					this.textAreaComponent.setValue(transcript);
@@ -106,9 +109,11 @@ export class SourceInputModal extends Modal {
 				new Notice(`✓ Extracted ${transcript.length} characters from YouTube video`);
 			} else {
 				// Regular article URL
+				console.log('[SourceInputModal] Detected article URL');
 				new Notice('Fetching article from URL...');
 				const sourceText = await TextExtractor.extractFromUrl(url);
 				
+				console.log('[SourceInputModal] Article text received, length:', sourceText.length);
 				this.textInput = sourceText;
 				if (this.textAreaComponent) {
 					this.textAreaComponent.setValue(sourceText);
@@ -117,29 +122,38 @@ export class SourceInputModal extends Modal {
 				new Notice(`✓ Extracted ${sourceText.length} characters from article`);
 			}
 		} catch (error) {
+			console.error('[SourceInputModal] Error during URL parse:', error);
 			new Notice(`Error: ${error.message}`);
 		} finally {
 			this.isProcessing = false;
+			console.log('[SourceInputModal] URL parse completed');
 		}
 	}
 
 	private async handleSubmit() {
+		console.log('[SourceInputModal] Handle submit called');
+		
 		if (this.isProcessing) {
+			console.log('[SourceInputModal] Already processing, skipping');
 			return;
 		}
 
 		// Check if text is provided
 		if (this.textInput.trim()) {
+			console.log('[SourceInputModal] Text input provided, length:', this.textInput.length);
 			const sourceText = TextExtractor.extractFromText(this.textInput.trim());
 			
 			if (sourceText.length < 50) {
+				console.log('[SourceInputModal] Text too short:', sourceText.length);
 				new Notice('Source text is too short. Please provide more content.');
 				return;
 			}
 
+			console.log('[SourceInputModal] Submitting source text, length:', sourceText.length);
 			this.close();
 			this.onSubmit(sourceText);
 		} else {
+			console.log('[SourceInputModal] No text provided');
 			new Notice('Please provide source text or parse a URL first');
 		}
 	}

@@ -557,63 +557,83 @@ var import_obsidian5 = require("obsidian");
 // src/utils/textExtractor.ts
 var TextExtractor = class {
   static async extractFromUrl(url) {
+    console.log("[TextExtractor] Starting extraction from URL:", url);
     try {
       new URL(url);
-    } catch (e) {
+      console.log("[TextExtractor] URL format is valid");
+    } catch (error) {
+      console.error("[TextExtractor] Invalid URL format:", error);
       throw new Error("Invalid URL format");
     }
     try {
+      console.log("[TextExtractor] Fetching URL...");
       const response = await fetch(url, {
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
       });
+      console.log("[TextExtractor] Response status:", response.status, response.statusText);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       const contentType = response.headers.get("content-type");
+      console.log("[TextExtractor] Content-Type:", contentType);
       if (!contentType || !contentType.includes("text/html")) {
         throw new Error("URL does not point to an HTML page");
       }
+      console.log("[TextExtractor] Fetching HTML content...");
       const html = await response.text();
+      console.log("[TextExtractor] HTML length:", html.length);
+      console.log("[TextExtractor] Parsing HTML...");
       const text = this.parseHtml(html);
+      console.log("[TextExtractor] Extracted text length:", text.length);
       if (!text || text.length < 100) {
+        console.error("[TextExtractor] Extracted text too short:", text.length);
         throw new Error("Could not extract meaningful text from the page");
       }
+      console.log("[TextExtractor] Successfully extracted text");
       return text;
     } catch (error) {
+      console.error("[TextExtractor] Error during extraction:", error);
       throw new Error(`Failed to fetch article: ${error.message}`);
     }
   }
   static extractFromText(text) {
+    console.log("[TextExtractor] Extracting from direct text, length:", text.length);
     return text.trim();
   }
   static parseHtml(html) {
+    console.log("[TextExtractor] Starting HTML parsing...");
     let text = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "").replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "").replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, "").replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, "").replace(/<header[^>]*>[\s\S]*?<\/header>/gi, "").replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, "").replace(/<aside[^>]*>[\s\S]*?<\/aside>/gi, "");
+    console.log("[TextExtractor] After removing non-content tags, length:", text.length);
     let extractedText = "";
+    let strategy = "none";
     const articleMatch = text.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
     if (articleMatch) {
       extractedText = articleMatch[1];
+      strategy = "article tag";
     }
     if (!extractedText) {
       const mainMatch = text.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
       if (mainMatch) {
         extractedText = mainMatch[1];
+        strategy = "main tag";
       }
     }
     if (!extractedText) {
       const patterns = [
-        /<div[^>]*class="[^"]*article[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
-        /<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
-        /<div[^>]*class="[^"]*post[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
-        /<div[^>]*class="[^"]*entry[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
-        /<div[^>]*class="[^"]*text[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
-        /<div[^>]*itemprop="articleBody"[^>]*>([\s\S]*?)<\/div>/i
+        { name: "article class", regex: /<div[^>]*class="[^"]*article[^"]*"[^>]*>([\s\S]*?)<\/div>/i },
+        { name: "content class", regex: /<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/div>/i },
+        { name: "post class", regex: /<div[^>]*class="[^"]*post[^"]*"[^>]*>([\s\S]*?)<\/div>/i },
+        { name: "entry class", regex: /<div[^>]*class="[^"]*entry[^"]*"[^>]*>([\s\S]*?)<\/div>/i },
+        { name: "text class", regex: /<div[^>]*class="[^"]*text[^"]*"[^>]*>([\s\S]*?)<\/div>/i },
+        { name: "articleBody itemprop", regex: /<div[^>]*itemprop="articleBody"[^>]*>([\s\S]*?)<\/div>/i }
       ];
       for (const pattern of patterns) {
-        const match = text.match(pattern);
+        const match = text.match(pattern.regex);
         if (match && match[1].length > 200) {
           extractedText = match[1];
+          strategy = pattern.name;
           break;
         }
       }
@@ -622,11 +642,17 @@ var TextExtractor = class {
       const bodyMatch = text.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
       if (bodyMatch) {
         extractedText = bodyMatch[1];
+        strategy = "body tag";
       } else {
         extractedText = text;
+        strategy = "full html";
       }
     }
+    console.log("[TextExtractor] Used strategy:", strategy);
+    console.log("[TextExtractor] Extracted content length before cleaning:", extractedText.length);
     extractedText = extractedText.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&mdash;/g, "\u2014").replace(/&ndash;/g, "\u2013").replace(/&hellip;/g, "\u2026").replace(/&#\d+;/g, "").replace(/&[a-z]+;/gi, " ").replace(/\s+/g, " ").trim();
+    console.log("[TextExtractor] Final cleaned text length:", extractedText.length);
+    console.log("[TextExtractor] First 200 chars:", extractedText.substring(0, 200));
     return extractedText;
   }
 };
@@ -634,31 +660,49 @@ var TextExtractor = class {
 // src/utils/youtubeTranscript.ts
 var YouTubeTranscript = class {
   static extractVideoId(url) {
+    console.log("[YouTubeTranscript] Extracting video ID from:", url);
     const match = url.match(this.YOUTUBE_REGEX);
-    return match ? match[1] : null;
+    const videoId = match ? match[1] : null;
+    console.log("[YouTubeTranscript] Extracted video ID:", videoId);
+    return videoId;
   }
   static isYouTubeUrl(url) {
-    return this.YOUTUBE_REGEX.test(url);
+    const isYT = this.YOUTUBE_REGEX.test(url);
+    console.log("[YouTubeTranscript] Is YouTube URL:", isYT, "for", url);
+    return isYT;
   }
   static async fetchTranscript(videoId, lang = "en") {
+    console.log("[YouTubeTranscript] Fetching transcript for video:", videoId, "language:", lang);
     try {
+      console.log("[YouTubeTranscript] Fetching video page...");
       const videoPageResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
+      console.log("[YouTubeTranscript] Video page response status:", videoPageResponse.status);
       if (!videoPageResponse.ok) {
         throw new Error("Failed to fetch video page");
       }
       const videoPageHtml = await videoPageResponse.text();
+      console.log("[YouTubeTranscript] Video page HTML length:", videoPageHtml.length);
+      console.log("[YouTubeTranscript] Looking for captions data...");
       const captionsMatch = videoPageHtml.match(/"captions":\s*({[^}]+})/);
       if (!captionsMatch) {
+        console.error("[YouTubeTranscript] No captions found in page");
         throw new Error("No captions available for this video");
       }
+      console.log("[YouTubeTranscript] Found captions data");
+      console.log("[YouTubeTranscript] Looking for captionTracks...");
       const transcriptMatch = videoPageHtml.match(/"captionTracks":\s*(\[[^\]]+\])/);
       if (!transcriptMatch) {
+        console.error("[YouTubeTranscript] Could not find captionTracks");
         throw new Error("Could not find transcript data");
       }
+      console.log("[YouTubeTranscript] Found captionTracks:", transcriptMatch[1].substring(0, 200));
       let captionTracks;
       try {
         captionTracks = JSON.parse(transcriptMatch[1]);
-      } catch (e) {
+        console.log("[YouTubeTranscript] Parsed caption tracks, count:", captionTracks.length);
+        console.log("[YouTubeTranscript] Available languages:", captionTracks.map((t) => t.languageCode).join(", "));
+      } catch (error) {
+        console.error("[YouTubeTranscript] Failed to parse caption tracks:", error);
         throw new Error("Failed to parse caption tracks");
       }
       let captionTrack = captionTracks.find(
@@ -669,45 +713,70 @@ var YouTubeTranscript = class {
       );
       if (!captionTrack && captionTracks.length > 0) {
         captionTrack = captionTracks[0];
+        console.log("[YouTubeTranscript] Using first available track:", captionTrack.languageCode);
       }
       if (!captionTrack || !captionTrack.baseUrl) {
+        console.error("[YouTubeTranscript] No suitable caption track found");
         throw new Error("No suitable caption track found");
       }
+      console.log("[YouTubeTranscript] Selected caption track:", captionTrack.languageCode);
+      console.log("[YouTubeTranscript] Caption URL:", captionTrack.baseUrl.substring(0, 100));
+      console.log("[YouTubeTranscript] Fetching transcript XML...");
       const transcriptResponse = await fetch(captionTrack.baseUrl);
+      console.log("[YouTubeTranscript] Transcript response status:", transcriptResponse.status);
       if (!transcriptResponse.ok) {
         throw new Error("Failed to fetch transcript");
       }
       const transcriptXml = await transcriptResponse.text();
+      console.log("[YouTubeTranscript] Transcript XML length:", transcriptXml.length);
+      console.log("[YouTubeTranscript] First 500 chars of XML:", transcriptXml.substring(0, 500));
+      console.log("[YouTubeTranscript] Parsing transcript XML...");
       const transcript = this.parseTranscriptXml(transcriptXml);
+      console.log("[YouTubeTranscript] Final transcript length:", transcript.length);
       return transcript;
     } catch (error) {
+      console.error("[YouTubeTranscript] Error during fetch:", error);
       throw new Error(`YouTube transcript error: ${error.message}`);
     }
   }
   static parseTranscriptXml(xml) {
+    console.log("[YouTubeTranscript] Parsing XML transcript...");
     const textMatches = xml.matchAll(/<text[^>]*start="([^"]*)"[^>]*>(.*?)<\/text>/g);
     const lines = [];
+    let count = 0;
     for (const match of textMatches) {
       const text = match[2].replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\n/g, " ").trim();
       if (text) {
         lines.push(text);
+        count++;
       }
     }
-    return lines.join(" ");
+    console.log("[YouTubeTranscript] Parsed", count, "text segments");
+    const result = lines.join(" ");
+    console.log("[YouTubeTranscript] Combined transcript length:", result.length);
+    return result;
   }
   static async getTranscriptFromUrl(url) {
+    console.log("[YouTubeTranscript] Getting transcript from URL:", url);
     const videoId = this.extractVideoId(url);
     if (!videoId) {
+      console.error("[YouTubeTranscript] Could not extract video ID");
       throw new Error("Invalid YouTube URL");
     }
     const languages = ["en", "ru", "auto"];
+    console.log("[YouTubeTranscript] Will try languages:", languages.join(", "));
     for (const lang of languages) {
       try {
-        return await this.fetchTranscript(videoId, lang);
+        console.log("[YouTubeTranscript] Attempting language:", lang);
+        const result = await this.fetchTranscript(videoId, lang);
+        console.log("[YouTubeTranscript] Success with language:", lang);
+        return result;
       } catch (error) {
+        console.log("[YouTubeTranscript] Failed with language:", lang, "Error:", error.message);
         continue;
       }
     }
+    console.error("[YouTubeTranscript] All language attempts failed");
     throw new Error("Could not fetch transcript in any language");
   }
 };
@@ -765,19 +834,24 @@ var SourceInputModal = class extends import_obsidian5.Modal {
       return;
     }
     const url = this.urlInput.trim();
+    console.log("[SourceInputModal] Starting URL parse for:", url);
     this.isProcessing = true;
     try {
       if (YouTubeTranscript.isYouTubeUrl(url)) {
+        console.log("[SourceInputModal] Detected YouTube URL");
         new import_obsidian5.Notice("Fetching YouTube transcript...");
         const transcript = await YouTubeTranscript.getTranscriptFromUrl(url);
+        console.log("[SourceInputModal] YouTube transcript received, length:", transcript.length);
         this.textInput = transcript;
         if (this.textAreaComponent) {
           this.textAreaComponent.setValue(transcript);
         }
         new import_obsidian5.Notice(`\u2713 Extracted ${transcript.length} characters from YouTube video`);
       } else {
+        console.log("[SourceInputModal] Detected article URL");
         new import_obsidian5.Notice("Fetching article from URL...");
         const sourceText = await TextExtractor.extractFromUrl(url);
+        console.log("[SourceInputModal] Article text received, length:", sourceText.length);
         this.textInput = sourceText;
         if (this.textAreaComponent) {
           this.textAreaComponent.setValue(sourceText);
@@ -785,24 +859,32 @@ var SourceInputModal = class extends import_obsidian5.Modal {
         new import_obsidian5.Notice(`\u2713 Extracted ${sourceText.length} characters from article`);
       }
     } catch (error) {
+      console.error("[SourceInputModal] Error during URL parse:", error);
       new import_obsidian5.Notice(`Error: ${error.message}`);
     } finally {
       this.isProcessing = false;
+      console.log("[SourceInputModal] URL parse completed");
     }
   }
   async handleSubmit() {
+    console.log("[SourceInputModal] Handle submit called");
     if (this.isProcessing) {
+      console.log("[SourceInputModal] Already processing, skipping");
       return;
     }
     if (this.textInput.trim()) {
+      console.log("[SourceInputModal] Text input provided, length:", this.textInput.length);
       const sourceText = TextExtractor.extractFromText(this.textInput.trim());
       if (sourceText.length < 50) {
+        console.log("[SourceInputModal] Text too short:", sourceText.length);
         new import_obsidian5.Notice("Source text is too short. Please provide more content.");
         return;
       }
+      console.log("[SourceInputModal] Submitting source text, length:", sourceText.length);
       this.close();
       this.onSubmit(sourceText);
     } else {
+      console.log("[SourceInputModal] No text provided");
       new import_obsidian5.Notice("Please provide source text or parse a URL first");
     }
   }
