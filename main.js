@@ -27,7 +27,7 @@ __export(main_exports, {
   default: () => ReadingCoachPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian5 = require("obsidian");
+var import_obsidian6 = require("obsidian");
 
 // src/settings.ts
 var import_obsidian = require("obsidian");
@@ -518,14 +518,138 @@ var ConnectionFinderMode = class {
   }
 };
 
+// src/views/sourceInputModal.ts
+var import_obsidian5 = require("obsidian");
+
+// src/utils/textExtractor.ts
+var TextExtractor = class {
+  static async extractFromUrl(url) {
+    try {
+      new URL(url);
+    } catch (e) {
+      throw new Error("Invalid URL format");
+    }
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; ReadingCoach/1.0)"
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("text/html")) {
+        throw new Error("URL does not point to an HTML page");
+      }
+      const html = await response.text();
+      const text = this.parseHtml(html);
+      if (!text || text.length < 100) {
+        throw new Error("Could not extract meaningful text from the page");
+      }
+      return text;
+    } catch (error) {
+      throw new Error(`Failed to fetch article: ${error.message}`);
+    }
+  }
+  static extractFromText(text) {
+    return text.trim();
+  }
+  static parseHtml(html) {
+    let text = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "").replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "").replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/gi, "");
+    const articleMatch = text.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
+    const mainMatch = text.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
+    const contentMatch = text.match(/<div[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+    if (articleMatch) {
+      text = articleMatch[1];
+    } else if (mainMatch) {
+      text = mainMatch[1];
+    } else if (contentMatch) {
+      text = contentMatch[1];
+    }
+    text = text.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
+    return text;
+  }
+};
+
+// src/views/sourceInputModal.ts
+var SourceInputModal = class extends import_obsidian5.Modal {
+  constructor(app, onSubmit) {
+    super(app);
+    this.urlInput = "";
+    this.textInput = "";
+    this.onSubmit = onSubmit;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.createEl("h2", { text: "Source Material" });
+    contentEl.createEl("p", {
+      text: "Enter a URL to an article or paste the source text directly.",
+      cls: "setting-item-description"
+    });
+    new import_obsidian5.Setting(contentEl).setName("Article URL").setDesc("Enter URL to fetch and parse article text").addText((text) => text.setPlaceholder("https://example.com/article").setValue(this.urlInput).onChange((value) => {
+      this.urlInput = value;
+    }));
+    contentEl.createEl("div", {
+      text: "\u2014 OR \u2014",
+      cls: "reading-coach-divider"
+    }).style.textAlign = "center";
+    contentEl.style.margin = "1em 0";
+    new import_obsidian5.Setting(contentEl).setName("Source Text").setDesc("Paste the source text directly").addTextArea((text) => {
+      text.setPlaceholder("Paste source text here...").setValue(this.textInput).onChange((value) => {
+        this.textInput = value;
+      });
+      text.inputEl.rows = 10;
+      text.inputEl.style.width = "100%";
+    });
+    new import_obsidian5.Setting(contentEl).addButton((btn) => btn.setButtonText("Cancel").onClick(() => {
+      this.close();
+    })).addButton((btn) => btn.setButtonText("Analyze").setCta().onClick(async () => {
+      await this.handleSubmit();
+    }));
+  }
+  async handleSubmit() {
+    if (this.urlInput.trim()) {
+      new import_obsidian5.Notice("Fetching article from URL...");
+      try {
+        const sourceText = await TextExtractor.extractFromUrl(this.urlInput.trim());
+        if (!sourceText || sourceText.length < 100) {
+          new import_obsidian5.Notice("Failed to extract meaningful text from URL. Please check the URL or paste text directly.");
+          return;
+        }
+        new import_obsidian5.Notice(`\u2713 Successfully extracted ${sourceText.length} characters`);
+        this.close();
+        this.onSubmit(sourceText);
+      } catch (error) {
+        new import_obsidian5.Notice(`Error fetching URL: ${error.message}`);
+      }
+    } else if (this.textInput.trim()) {
+      const sourceText = TextExtractor.extractFromText(this.textInput.trim());
+      if (sourceText.length < 50) {
+        new import_obsidian5.Notice("Source text is too short. Please provide more content.");
+        return;
+      }
+      this.close();
+      this.onSubmit(sourceText);
+    } else {
+      new import_obsidian5.Notice("Please provide either a URL or source text");
+    }
+  }
+  onClose() {
+    const { contentEl } = this;
+    contentEl.empty();
+  }
+};
+
 // main.ts
-var ReadingCoachPlugin = class extends import_obsidian5.Plugin {
+var ReadingCoachPlugin = class extends import_obsidian6.Plugin {
   async onload() {
     await this.loadSettings();
     this.depthCheckMode = new DepthCheckMode(this);
     this.connectionFinderMode = new ConnectionFinderMode(this);
     this.addRibbonIcon("book-open", "Reading Coach", () => {
-      new import_obsidian5.Notice("Reading Coach: Use command palette to select a mode");
+      new import_obsidian6.Notice("Reading Coach: Use command palette to select a mode");
     });
     this.addCommand({
       id: "depth-check",
@@ -554,31 +678,33 @@ var ReadingCoachPlugin = class extends import_obsidian5.Plugin {
     await this.saveData(this.settings);
   }
   async runDepthCheck() {
-    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian5.MarkdownView);
+    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian6.MarkdownView);
     if (!activeView) {
-      new import_obsidian5.Notice("Please open a note first");
+      new import_obsidian6.Notice("Please open a note first");
       return;
     }
     const userNotes = activeView.editor.getValue();
     if (!userNotes) {
-      new import_obsidian5.Notice("Current note is empty");
+      new import_obsidian6.Notice("Current note is empty");
       return;
     }
-    const sourceText = "Sample source text";
-    await this.depthCheckMode.execute(sourceText, userNotes);
+    new SourceInputModal(this.app, async (sourceText) => {
+      await this.depthCheckMode.execute(sourceText, userNotes);
+    }).open();
   }
   async runConnectionFinder() {
-    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian5.MarkdownView);
+    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian6.MarkdownView);
     if (!activeView) {
-      new import_obsidian5.Notice("Please open a note first");
+      new import_obsidian6.Notice("Please open a note first");
       return;
     }
     const userNotes = activeView.editor.getValue();
     if (!userNotes) {
-      new import_obsidian5.Notice("Current note is empty");
+      new import_obsidian6.Notice("Current note is empty");
       return;
     }
-    const sourceText = "Sample source text";
-    await this.connectionFinderMode.execute(sourceText, userNotes);
+    new SourceInputModal(this.app, async (sourceText) => {
+      await this.connectionFinderMode.execute(sourceText, userNotes);
+    }).open();
   }
 };

@@ -2,7 +2,7 @@ import { App, Plugin, Notice, MarkdownView } from 'obsidian';
 import { ReadingCoachSettings, DEFAULT_SETTINGS, ReadingCoachSettingTab } from './src/settings';
 import { DepthCheckMode } from './src/modes/depthCheck';
 import { ConnectionFinderMode } from './src/modes/connectionFinder';
-import { TextExtractor } from './src/utils/textExtractor';
+import { SourceInputModal } from './src/views/sourceInputModal';
 
 export default class ReadingCoachPlugin extends Plugin {
 	settings: ReadingCoachSettings;
@@ -71,10 +71,10 @@ export default class ReadingCoachPlugin extends Plugin {
 			return;
 		}
 
-		// TODO: Prompt user for source text or URL
-		const sourceText = 'Sample source text'; // Placeholder
-		
-		await this.depthCheckMode.execute(sourceText, userNotes);
+		// Prompt for source material
+		new SourceInputModal(this.app, async (sourceText: string) => {
+			await this.depthCheckMode.execute(sourceText, userNotes);
+		}).open();
 	}
 
 	private async runConnectionFinder() {
@@ -91,9 +91,9 @@ export default class ReadingCoachPlugin extends Plugin {
 			return;
 		}
 
-		// TODO: Prompt user for source text or URL
-		const sourceText = 'Sample source text'; // Placeholder
-		
-		await this.connectionFinderMode.execute(sourceText, userNotes);
+		// Prompt for source material
+		new SourceInputModal(this.app, async (sourceText: string) => {
+			await this.connectionFinderMode.execute(sourceText, userNotes);
+		}).open();
 	}
 }
