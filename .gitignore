@@ -2,8 +2,7 @@
 node_modules
 package-lock.json
 
-# build
-main.js
+# build (keep main.js for distribution)
 *.js.map
 
 # obsidian

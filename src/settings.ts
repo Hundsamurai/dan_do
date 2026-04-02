@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting, TextAreaComponent } from 'obsidian';
+import { App, PluginSettingTab, Setting, TextAreaComponent, Modal } from 'obsidian';
 import type ReadingCoachPlugin from '../main';
 import { PromptsEN } from './ai/prompts/en';
 import { PromptsRU } from './ai/prompts/ru';
@@ -254,9 +254,6 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 					this.plugin.settings.connectionFinderEnabled = value;
 					await this.plugin.saveSettings();
 				}));
-	}
-}
-
 
 		// Custom Prompts
 		containerEl.createEl('h3', {text: 'Custom Prompts'});
@@ -367,8 +364,6 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 				}));
 	}
 }
-
-import { Modal } from 'obsidian';
 
 class PromptPreviewModal extends Modal {
 	constructor(app: App, private title: string, private content: string) {

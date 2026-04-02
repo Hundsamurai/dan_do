@@ -15,31 +15,10 @@ AI-powered reading comprehension assistant for Obsidian that analyzes your notes
 
 ## Installation
 
-### From Obsidian Community Plugins (Coming Soon)
-
-1. Open Settings → Community Plugins
-2. Search for "Reading Coach"
-3. Click Install, then Enable
-
-### Manual Installation
-
-1. Download the latest release from GitHub
-2. Extract the files to your vault's `.obsidian/plugins/reading-coach/` folder
+1. Download or clone this repository
+2. Copy the folder to your vault's `.obsidian/plugins/` directory
 3. Reload Obsidian
 4. Enable the plugin in Settings → Community Plugins
-
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start development build (watches for changes)
-npm run dev
-
-# Create production build
-npm run build
-```
 
 ## Configuration
 
