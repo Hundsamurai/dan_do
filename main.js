@@ -631,12 +631,96 @@ var TextExtractor = class {
   }
 };
 
+// src/utils/youtubeTranscript.ts
+var YouTubeTranscript = class {
+  static extractVideoId(url) {
+    const match = url.match(this.YOUTUBE_REGEX);
+    return match ? match[1] : null;
+  }
+  static isYouTubeUrl(url) {
+    return this.YOUTUBE_REGEX.test(url);
+  }
+  static async fetchTranscript(videoId, lang = "en") {
+    try {
+      const videoPageResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
+      if (!videoPageResponse.ok) {
+        throw new Error("Failed to fetch video page");
+      }
+      const videoPageHtml = await videoPageResponse.text();
+      const captionsMatch = videoPageHtml.match(/"captions":\s*({[^}]+})/);
+      if (!captionsMatch) {
+        throw new Error("No captions available for this video");
+      }
+      const transcriptMatch = videoPageHtml.match(/"captionTracks":\s*(\[[^\]]+\])/);
+      if (!transcriptMatch) {
+        throw new Error("Could not find transcript data");
+      }
+      let captionTracks;
+      try {
+        captionTracks = JSON.parse(transcriptMatch[1]);
+      } catch (e) {
+        throw new Error("Failed to parse caption tracks");
+      }
+      let captionTrack = captionTracks.find(
+        (track) => {
+          var _a;
+          return track.languageCode === lang || ((_a = track.languageCode) == null ? void 0 : _a.startsWith(lang));
+        }
+      );
+      if (!captionTrack && captionTracks.length > 0) {
+        captionTrack = captionTracks[0];
+      }
+      if (!captionTrack || !captionTrack.baseUrl) {
+        throw new Error("No suitable caption track found");
+      }
+      const transcriptResponse = await fetch(captionTrack.baseUrl);
+      if (!transcriptResponse.ok) {
+        throw new Error("Failed to fetch transcript");
+      }
+      const transcriptXml = await transcriptResponse.text();
+      const transcript = this.parseTranscriptXml(transcriptXml);
+      return transcript;
+    } catch (error) {
+      throw new Error(`YouTube transcript error: ${error.message}`);
+    }
+  }
+  static parseTranscriptXml(xml) {
+    const textMatches = xml.matchAll(/<text[^>]*start="([^"]*)"[^>]*>(.*?)<\/text>/g);
+    const lines = [];
+    for (const match of textMatches) {
+      const text = match[2].replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\n/g, " ").trim();
+      if (text) {
+        lines.push(text);
+      }
+    }
+    return lines.join(" ");
+  }
+  static async getTranscriptFromUrl(url) {
+    const videoId = this.extractVideoId(url);
+    if (!videoId) {
+      throw new Error("Invalid YouTube URL");
+    }
+    const languages = ["en", "ru", "auto"];
+    for (const lang of languages) {
+      try {
+        return await this.fetchTranscript(videoId, lang);
+      } catch (error) {
+        continue;
+      }
+    }
+    throw new Error("Could not fetch transcript in any language");
+  }
+};
+YouTubeTranscript.YOUTUBE_REGEX = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/;
+
 // src/views/sourceInputModal.ts
 var SourceInputModal = class extends import_obsidian5.Modal {
   constructor(app, onSubmit) {
     super(app);
     this.urlInput = "";
     this.textInput = "";
+    this.isProcessing = false;
+    this.textAreaComponent = null;
     this.onSubmit = onSubmit;
   }
   onOpen() {
@@ -644,46 +728,73 @@ var SourceInputModal = class extends import_obsidian5.Modal {
     contentEl.empty();
     contentEl.createEl("h2", { text: "Source Material" });
     contentEl.createEl("p", {
-      text: "Enter a URL to an article or paste the source text directly.",
+      text: "Enter a URL (article or YouTube video) or paste the source text directly.",
       cls: "setting-item-description"
     });
-    new import_obsidian5.Setting(contentEl).setName("Article URL").setDesc("Enter URL to fetch and parse article text").addText((text) => text.setPlaceholder("https://example.com/article").setValue(this.urlInput).onChange((value) => {
-      this.urlInput = value;
+    new import_obsidian5.Setting(contentEl).setName("URL").setDesc("Article URL or YouTube video link").addText((text) => {
+      text.setPlaceholder("https://example.com/article or https://youtube.com/watch?v=...").setValue(this.urlInput).onChange((value) => {
+        this.urlInput = value;
+      });
+      text.inputEl.style.width = "100%";
+    }).addButton((btn) => btn.setButtonText("Parse URL").onClick(async () => {
+      await this.handleUrlParse();
     }));
-    contentEl.createEl("div", {
+    const divider = contentEl.createEl("div", {
       text: "\u2014 OR \u2014",
       cls: "reading-coach-divider"
-    }).style.textAlign = "center";
-    contentEl.style.margin = "1em 0";
-    new import_obsidian5.Setting(contentEl).setName("Source Text").setDesc("Paste the source text directly").addTextArea((text) => {
+    });
+    divider.style.textAlign = "center";
+    divider.style.margin = "1em 0";
+    new import_obsidian5.Setting(contentEl).setName("Source Text").setDesc("Paste the source text directly (or parsed from URL above)").addTextArea((text) => {
+      this.textAreaComponent = text;
       text.setPlaceholder("Paste source text here...").setValue(this.textInput).onChange((value) => {
         this.textInput = value;
       });
-      text.inputEl.rows = 10;
+      text.inputEl.rows = 12;
       text.inputEl.style.width = "100%";
     });
     new import_obsidian5.Setting(contentEl).addButton((btn) => btn.setButtonText("Cancel").onClick(() => {
       this.close();
-    })).addButton((btn) => btn.setButtonText("Analyze").setCta().onClick(async () => {
+    })).addButton((btn) => btn.setButtonText("Analyze").setCta().setDisabled(this.isProcessing).onClick(async () => {
       await this.handleSubmit();
     }));
   }
-  async handleSubmit() {
-    if (this.urlInput.trim()) {
-      new import_obsidian5.Notice("Fetching article from URL...");
-      try {
-        const sourceText = await TextExtractor.extractFromUrl(this.urlInput.trim());
-        if (!sourceText || sourceText.length < 100) {
-          new import_obsidian5.Notice("Failed to extract meaningful text from URL. Please check the URL or paste text directly.");
-          return;
+  async handleUrlParse() {
+    if (!this.urlInput.trim()) {
+      new import_obsidian5.Notice("Please enter a URL");
+      return;
+    }
+    const url = this.urlInput.trim();
+    this.isProcessing = true;
+    try {
+      if (YouTubeTranscript.isYouTubeUrl(url)) {
+        new import_obsidian5.Notice("Fetching YouTube transcript...");
+        const transcript = await YouTubeTranscript.getTranscriptFromUrl(url);
+        this.textInput = transcript;
+        if (this.textAreaComponent) {
+          this.textAreaComponent.setValue(transcript);
         }
-        new import_obsidian5.Notice(`\u2713 Successfully extracted ${sourceText.length} characters`);
-        this.close();
-        this.onSubmit(sourceText);
-      } catch (error) {
-        new import_obsidian5.Notice(`Error fetching URL: ${error.message}`);
+        new import_obsidian5.Notice(`\u2713 Extracted ${transcript.length} characters from YouTube video`);
+      } else {
+        new import_obsidian5.Notice("Fetching article from URL...");
+        const sourceText = await TextExtractor.extractFromUrl(url);
+        this.textInput = sourceText;
+        if (this.textAreaComponent) {
+          this.textAreaComponent.setValue(sourceText);
+        }
+        new import_obsidian5.Notice(`\u2713 Extracted ${sourceText.length} characters from article`);
       }
-    } else if (this.textInput.trim()) {
+    } catch (error) {
+      new import_obsidian5.Notice(`Error: ${error.message}`);
+    } finally {
+      this.isProcessing = false;
+    }
+  }
+  async handleSubmit() {
+    if (this.isProcessing) {
+      return;
+    }
+    if (this.textInput.trim()) {
       const sourceText = TextExtractor.extractFromText(this.textInput.trim());
       if (sourceText.length < 50) {
         new import_obsidian5.Notice("Source text is too short. Please provide more content.");
@@ -692,7 +803,7 @@ var SourceInputModal = class extends import_obsidian5.Modal {
       this.close();
       this.onSubmit(sourceText);
     } else {
-      new import_obsidian5.Notice("Please provide either a URL or source text");
+      new import_obsidian5.Notice("Please provide source text or parse a URL first");
     }
   }
   onClose() {
