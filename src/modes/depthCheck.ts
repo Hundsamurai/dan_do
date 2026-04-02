@@ -3,23 +3,25 @@ import type ReadingCoachPlugin from '../../main';
 import { AIProvider } from '../ai/provider';
 import { Prompts } from '../ai/prompts';
 import { ResultModal } from '../views/resultModal';
-import { translations } from '../i18n/translations';
 
 export class DepthCheckMode {
 	constructor(private plugin: ReadingCoachPlugin) {}
 
 	async execute(sourceText: string, userNotes: string): Promise<void> {
-		const t = translations[this.plugin.settings.language];
-		
 		if (!this.plugin.settings.depthCheckEnabled) {
-			new Notice(t.modeDisabled);
+			new Notice('Depth Check mode is disabled in settings');
 			return;
 		}
 
-		new Notice(t.analyzingDepth);
+		new Notice('Analyzing depth of understanding...');
 
 		const provider = new AIProvider(this.plugin.settings);
-		const prompt = Prompts.depthCheck(sourceText, userNotes, this.plugin.settings.language);
+		const lang = this.plugin.settings.promptLanguage;
+		const customPrompt = lang === 'ru' 
+			? this.plugin.settings.customPrompts.depthCheckRU 
+			: this.plugin.settings.customPrompts.depthCheckEN;
+		
+		const prompt = Prompts.depthCheck(sourceText, userNotes, lang, customPrompt);
 		
 		const response = await provider.generate(prompt);
 
@@ -29,6 +31,6 @@ export class DepthCheckMode {
 		}
 
 		// Show result in modal
-		new ResultModal(this.plugin.app, t.depthCheckTitle, response.content).open();
+		new ResultModal(this.plugin.app, 'Depth Check Analysis', response.content).open();
 	}
 }

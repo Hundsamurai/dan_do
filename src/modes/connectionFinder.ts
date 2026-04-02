@@ -4,27 +4,29 @@ import { AIProvider } from '../ai/provider';
 import { Prompts } from '../ai/prompts';
 import { ResultModal } from '../views/resultModal';
 import { VaultScanner } from '../utils/vaultScanner';
-import { translations } from '../i18n/translations';
 
 export class ConnectionFinderMode {
 	constructor(private plugin: ReadingCoachPlugin) {}
 
 	async execute(sourceText: string, userNotes: string): Promise<void> {
-		const t = translations[this.plugin.settings.language];
-		
 		if (!this.plugin.settings.connectionFinderEnabled) {
-			new Notice(t.modeDisabled);
+			new Notice('Connection Finder mode is disabled in settings');
 			return;
 		}
 
-		new Notice(t.scanningVault);
+		new Notice('Scanning vault and finding connections...');
 
 		// Scan vault for existing notes
 		const scanner = new VaultScanner(this.plugin.app);
 		const vaultNotes = await scanner.getAllNoteTitles();
 
 		const provider = new AIProvider(this.plugin.settings);
-		const prompt = Prompts.connectionFinder(sourceText, userNotes, vaultNotes, this.plugin.settings.language);
+		const lang = this.plugin.settings.promptLanguage;
+		const customPrompt = lang === 'ru' 
+			? this.plugin.settings.customPrompts.connectionFinderRU 
+			: this.plugin.settings.customPrompts.connectionFinderEN;
+		
+		const prompt = Prompts.connectionFinder(sourceText, userNotes, vaultNotes, lang, customPrompt);
 		
 		const response = await provider.generate(prompt);
 
@@ -34,6 +36,6 @@ export class ConnectionFinderMode {
 		}
 
 		// Show result in modal
-		new ResultModal(this.plugin.app, t.connectionFinderTitle, response.content).open();
+		new ResultModal(this.plugin.app, 'Connection Finder', response.content).open();
 	}
 }

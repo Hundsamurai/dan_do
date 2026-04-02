@@ -3,7 +3,6 @@ import { ReadingCoachSettings, DEFAULT_SETTINGS, ReadingCoachSettingTab } from '
 import { DepthCheckMode } from './src/modes/depthCheck';
 import { ConnectionFinderMode } from './src/modes/connectionFinder';
 import { TextExtractor } from './src/utils/textExtractor';
-import { translations } from './src/i18n/translations';
 
 export default class ReadingCoachPlugin extends Plugin {
 	settings: ReadingCoachSettings;
@@ -19,8 +18,7 @@ export default class ReadingCoachPlugin extends Plugin {
 
 		// Add ribbon icon
 		this.addRibbonIcon('book-open', 'Reading Coach', () => {
-			const t = translations[this.settings.language];
-			new Notice(t.ribbonNotice);
+			new Notice('Reading Coach: Use command palette to select a mode');
 		});
 
 		// Command: Depth Check
@@ -60,17 +58,16 @@ export default class ReadingCoachPlugin extends Plugin {
 	}
 
 	private async runDepthCheck() {
-		const t = translations[this.settings.language];
 		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
 		
 		if (!activeView) {
-			new Notice(t.noActiveNote);
+			new Notice('Please open a note first');
 			return;
 		}
 
 		const userNotes = activeView.editor.getValue();
 		if (!userNotes) {
-			new Notice(t.emptyNote);
+			new Notice('Current note is empty');
 			return;
 		}
 
@@ -81,17 +78,16 @@ export default class ReadingCoachPlugin extends Plugin {
 	}
 
 	private async runConnectionFinder() {
-		const t = translations[this.settings.language];
 		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
 		
 		if (!activeView) {
-			new Notice(t.noActiveNote);
+			new Notice('Please open a note first');
 			return;
 		}
 
 		const userNotes = activeView.editor.getValue();
 		if (!userNotes) {
-			new Notice(t.emptyNote);
+			new Notice('Current note is empty');
 			return;
 		}
 

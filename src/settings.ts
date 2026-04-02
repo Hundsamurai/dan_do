@@ -1,10 +1,19 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, TextAreaComponent } from 'obsidian';
 import type ReadingCoachPlugin from '../main';
-import { translations } from './i18n/translations';
+import { PromptsEN } from './ai/prompts/en';
+import { PromptsRU } from './ai/prompts/ru';
 
 export interface ReadingCoachSettings {
-	// Language
-	language: 'en' | 'ru';
+	// Prompt Language
+	promptLanguage: 'en' | 'ru';
+	
+	// Custom Prompts
+	customPrompts: {
+		depthCheckEN: string;
+		depthCheckRU: string;
+		connectionFinderEN: string;
+		connectionFinderRU: string;
+	};
 	
 	// AI Provider
 	aiProvider: 'openai' | 'ollama' | 'deepseek' | 'openrouter';
@@ -34,7 +43,13 @@ export interface ReadingCoachSettings {
 }
 
 export const DEFAULT_SETTINGS: ReadingCoachSettings = {
-	language: 'en',
+	promptLanguage: 'en',
+	customPrompts: {
+		depthCheckEN: '',
+		depthCheckRU: '',
+		connectionFinderEN: '',
+		connectionFinderRU: ''
+	},
 	aiProvider: 'openai',
 	openaiApiKey: '',
 	openaiModel: 'gpt-3.5-turbo',
@@ -61,29 +76,25 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 		const {containerEl} = this;
 		containerEl.empty();
 
-		const lang = this.plugin.settings.language;
-		const t = translations[lang];
+		containerEl.createEl('h2', {text: 'Reading Coach Settings'});
 
-		containerEl.createEl('h2', {text: t.settingsTitle});
-
-		// Language selection
+		// Prompt Language selection
 		new Setting(containerEl)
-			.setName('Language / Язык')
-			.setDesc('Interface and prompt language / Язык интерфейса и промптов')
+			.setName('Prompt Language')
+			.setDesc('Language for AI prompts')
 			.addDropdown(dropdown => dropdown
 				.addOption('en', 'English')
 				.addOption('ru', 'Русский')
-				.setValue(this.plugin.settings.language)
+				.setValue(this.plugin.settings.promptLanguage)
 				.onChange(async (value: any) => {
-					this.plugin.settings.language = value;
+					this.plugin.settings.promptLanguage = value;
 					await this.plugin.saveSettings();
-					this.display();
 				}));
 
 		// AI Provider selection
 		new Setting(containerEl)
-			.setName(t.aiProviderLabel)
-			.setDesc(t.aiProviderDesc)
+			.setName('AI Provider')
+			.setDesc('Choose your AI provider')
 			.addDropdown(dropdown => dropdown
 				.addOption('openai', 'OpenAI')
 				.addOption('ollama', 'Ollama (Local)')
@@ -101,8 +112,8 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 			containerEl.createEl('h3', {text: 'OpenAI Configuration'});
 			
 			new Setting(containerEl)
-				.setName(t.apiKeyLabel)
-				.setDesc(lang === 'ru' ? 'Введите ваш OpenAI API ключ' : 'Enter your OpenAI API key')
+				.setName('API Key')
+				.setDesc('Enter your OpenAI API key')
 				.addText(text => text
 					.setPlaceholder('sk-...')
 					.setValue(this.plugin.settings.openaiApiKey)
@@ -112,8 +123,8 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 					}));
 
 			new Setting(containerEl)
-				.setName(t.modelLabel)
-				.setDesc(lang === 'ru' ? 'Модель OpenAI для использования' : 'OpenAI model to use')
+				.setName('Model')
+				.setDesc('OpenAI model to use')
 				.addDropdown(dropdown => dropdown
 					.addOption('gpt-3.5-turbo', 'GPT-3.5 Turbo')
 					.addOption('gpt-4', 'GPT-4')
@@ -131,7 +142,7 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 			
 			new Setting(containerEl)
 				.setName('Ollama URL')
-				.setDesc(lang === 'ru' ? 'URL вашего локального Ollama' : 'URL of your local Ollama instance')
+				.setDesc('URL of your local Ollama instance')
 				.addText(text => text
 					.setPlaceholder('http://localhost:11434')
 					.setValue(this.plugin.settings.ollamaUrl)
@@ -141,8 +152,8 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 					}));
 
 			new Setting(containerEl)
-				.setName(t.modelLabel)
-				.setDesc(lang === 'ru' ? 'Модель Ollama (например, llama2, mistral)' : 'Ollama model to use (e.g., llama2, mistral)')
+				.setName('Model')
+				.setDesc('Ollama model to use (e.g., llama2, mistral)')
 				.addText(text => text
 					.setPlaceholder('llama2')
 					.setValue(this.plugin.settings.ollamaModel)
@@ -157,8 +168,8 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 			containerEl.createEl('h3', {text: 'DeepSeek Configuration'});
 			
 			new Setting(containerEl)
-				.setName(t.apiKeyLabel)
-				.setDesc(lang === 'ru' ? 'Введите ваш DeepSeek API ключ' : 'Enter your DeepSeek API key')
+				.setName('API Key')
+				.setDesc('Enter your DeepSeek API key')
 				.addText(text => text
 					.setPlaceholder('sk-...')
 					.setValue(this.plugin.settings.deepseekApiKey)
@@ -168,8 +179,8 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 					}));
 
 			new Setting(containerEl)
-				.setName(t.modelLabel)
-				.setDesc(lang === 'ru' ? 'Модель DeepSeek для использования' : 'DeepSeek model to use')
+				.setName('Model')
+				.setDesc('DeepSeek model to use')
 				.addText(text => text
 					.setPlaceholder('deepseek-chat')
 					.setValue(this.plugin.settings.deepseekModel)
@@ -184,8 +195,8 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 			containerEl.createEl('h3', {text: 'OpenRouter Configuration'});
 			
 			new Setting(containerEl)
-				.setName(t.apiKeyLabel)
-				.setDesc(lang === 'ru' ? 'Введите ваш OpenRouter API ключ' : 'Enter your OpenRouter API key')
+				.setName('API Key')
+				.setDesc('Enter your OpenRouter API key')
 				.addText(text => text
 					.setPlaceholder('sk-or-...')
 					.setValue(this.plugin.settings.openrouterApiKey)
@@ -195,8 +206,8 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 					}));
 
 			new Setting(containerEl)
-				.setName(t.modelLabel)
-				.setDesc(lang === 'ru' ? 'Модель OpenRouter для использования' : 'OpenRouter model to use')
+				.setName('Model')
+				.setDesc('OpenRouter model to use')
 				.addText(text => text
 					.setPlaceholder('anthropic/claude-2')
 					.setValue(this.plugin.settings.openrouterModel)
@@ -207,11 +218,11 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 		}
 
 		// AI Parameters
-		containerEl.createEl('h3', {text: lang === 'ru' ? 'Параметры AI' : 'AI Parameters'});
+		containerEl.createEl('h3', {text: 'AI Parameters'});
 		
 		new Setting(containerEl)
-			.setName(t.temperatureLabel)
-			.setDesc(t.temperatureDesc)
+			.setName('Temperature')
+			.setDesc('Controls randomness (0.0 = focused, 1.0 = creative)')
 			.addSlider(slider => slider
 				.setLimits(0, 1, 0.1)
 				.setValue(this.plugin.settings.temperature)
@@ -222,11 +233,11 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 				}));
 
 		// Modes
-		containerEl.createEl('h3', {text: t.modesTitle});
+		containerEl.createEl('h3', {text: 'Enabled Modes'});
 		
 		new Setting(containerEl)
-			.setName(t.depthCheckLabel)
-			.setDesc(t.depthCheckDesc)
+			.setName('Depth Check')
+			.setDesc('Analyze understanding depth of your notes')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.depthCheckEnabled)
 				.onChange(async (value) => {
@@ -235,13 +246,155 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 				}));
 
 		new Setting(containerEl)
-			.setName(t.connectionFinderLabel)
-			.setDesc(t.connectionFinderDesc)
+			.setName('Connection Finder')
+			.setDesc('Find connections between notes in your vault')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.connectionFinderEnabled)
 				.onChange(async (value) => {
 					this.plugin.settings.connectionFinderEnabled = value;
 					await this.plugin.saveSettings();
 				}));
+	}
+}
+
+
+		// Custom Prompts
+		containerEl.createEl('h3', {text: 'Custom Prompts'});
+		containerEl.createEl('p', {
+			text: 'Customize AI prompts for each mode. Leave empty to use defaults. Use {sourceText}, {userNotes}, and {vaultNotes} as placeholders.',
+			cls: 'setting-item-description'
+		});
+
+		// Depth Check EN
+		new Setting(containerEl)
+			.setName('Depth Check Prompt (English)')
+			.setDesc('Custom prompt for Depth Check mode in English')
+			.addTextArea(text => {
+				text
+					.setPlaceholder('Leave empty for default prompt')
+					.setValue(this.plugin.settings.customPrompts.depthCheckEN)
+					.onChange(async (value) => {
+						this.plugin.settings.customPrompts.depthCheckEN = value;
+						await this.plugin.saveSettings();
+					});
+				text.inputEl.rows = 8;
+				text.inputEl.cols = 50;
+			});
+
+		// Show default button
+		new Setting(containerEl)
+			.setName('')
+			.addButton(button => button
+				.setButtonText('Show Default EN Prompt')
+				.onClick(() => {
+					const defaultPrompt = PromptsEN.depthCheck('{sourceText}', '{userNotes}');
+					new PromptPreviewModal(this.app, 'Default Depth Check Prompt (EN)', defaultPrompt).open();
+				}));
+
+		// Depth Check RU
+		new Setting(containerEl)
+			.setName('Depth Check Prompt (Russian)')
+			.setDesc('Custom prompt for Depth Check mode in Russian')
+			.addTextArea(text => {
+				text
+					.setPlaceholder('Оставьте пустым для промпта по умолчанию')
+					.setValue(this.plugin.settings.customPrompts.depthCheckRU)
+					.onChange(async (value) => {
+						this.plugin.settings.customPrompts.depthCheckRU = value;
+						await this.plugin.saveSettings();
+					});
+				text.inputEl.rows = 8;
+				text.inputEl.cols = 50;
+			});
+
+		new Setting(containerEl)
+			.setName('')
+			.addButton(button => button
+				.setButtonText('Show Default RU Prompt')
+				.onClick(() => {
+					const defaultPrompt = PromptsRU.depthCheck('{sourceText}', '{userNotes}');
+					new PromptPreviewModal(this.app, 'Default Depth Check Prompt (RU)', defaultPrompt).open();
+				}));
+
+		// Connection Finder EN
+		new Setting(containerEl)
+			.setName('Connection Finder Prompt (English)')
+			.setDesc('Custom prompt for Connection Finder mode in English')
+			.addTextArea(text => {
+				text
+					.setPlaceholder('Leave empty for default prompt')
+					.setValue(this.plugin.settings.customPrompts.connectionFinderEN)
+					.onChange(async (value) => {
+						this.plugin.settings.customPrompts.connectionFinderEN = value;
+						await this.plugin.saveSettings();
+					});
+				text.inputEl.rows = 8;
+				text.inputEl.cols = 50;
+			});
+
+		new Setting(containerEl)
+			.setName('')
+			.addButton(button => button
+				.setButtonText('Show Default EN Prompt')
+				.onClick(() => {
+					const defaultPrompt = PromptsEN.connectionFinder('{sourceText}', '{userNotes}', ['{vaultNotes}']);
+					new PromptPreviewModal(this.app, 'Default Connection Finder Prompt (EN)', defaultPrompt).open();
+				}));
+
+		// Connection Finder RU
+		new Setting(containerEl)
+			.setName('Connection Finder Prompt (Russian)')
+			.setDesc('Custom prompt for Connection Finder mode in Russian')
+			.addTextArea(text => {
+				text
+					.setPlaceholder('Оставьте пустым для промпта по умолчанию')
+					.setValue(this.plugin.settings.customPrompts.connectionFinderRU)
+					.onChange(async (value) => {
+						this.plugin.settings.customPrompts.connectionFinderRU = value;
+						await this.plugin.saveSettings();
+					});
+				text.inputEl.rows = 8;
+				text.inputEl.cols = 50;
+			});
+
+		new Setting(containerEl)
+			.setName('')
+			.addButton(button => button
+				.setButtonText('Show Default RU Prompt')
+				.onClick(() => {
+					const defaultPrompt = PromptsRU.connectionFinder('{sourceText}', '{userNotes}', ['{vaultNotes}']);
+					new PromptPreviewModal(this.app, 'Default Connection Finder Prompt (RU)', defaultPrompt).open();
+				}));
+	}
+}
+
+import { Modal } from 'obsidian';
+
+class PromptPreviewModal extends Modal {
+	constructor(app: App, private title: string, private content: string) {
+		super(app);
+	}
+
+	onOpen() {
+		const {contentEl} = this;
+		contentEl.empty();
+
+		contentEl.createEl('h2', {text: this.title});
+		
+		const pre = contentEl.createEl('pre', {
+			text: this.content,
+			cls: 'reading-coach-prompt-preview'
+		});
+		pre.style.whiteSpace = 'pre-wrap';
+		pre.style.maxHeight = '400px';
+		pre.style.overflow = 'auto';
+		pre.style.padding = '1em';
+		pre.style.backgroundColor = 'var(--background-secondary)';
+		pre.style.borderRadius = '4px';
+	}
+
+	onClose() {
+		const {contentEl} = this;
+		contentEl.empty();
 	}
 }
