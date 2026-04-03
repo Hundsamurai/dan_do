@@ -27,7 +27,7 @@ __export(main_exports, {
   default: () => ReadingCoachPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian8 = require("obsidian");
+var import_obsidian10 = require("obsidian");
 
 // src/settings.ts
 var import_obsidian = require("obsidian");
@@ -70,6 +70,36 @@ Identify:
 4. Conceptual bridges between current and existing knowledge
 
 Respond in the same language as the source text and notes. Format your response as a connection map.`;
+  },
+  socraticQuestions: (sourceText, userNotes) => {
+    return `You are a Socratic questioning coach. Your task is to generate provocative, challenging questions that push the user to think beyond what's explicitly stated in their notes and the source material.
+
+SOURCE TEXT:
+${sourceText}
+
+USER'S NOTES:
+${userNotes}
+
+Generate 5-8 provocative Socratic questions that:
+1. Challenge assumptions made in the source or notes
+2. Explore contradictions or tensions not explicitly addressed
+3. Ask "what if" scenarios that test the limits of the ideas
+4. Question the implications and consequences not covered
+5. Probe gaps between what's stated and what's implied
+6. Challenge the reader to reconcile different viewpoints
+
+IMPORTANT: These should NOT be quiz questions testing what the user knows. Instead, they should be questions that:
+- The notes don't directly answer
+- Challenge the underlying premises
+- Force critical thinking about unstated assumptions
+- Explore edge cases and counterexamples
+
+Example format:
+"You wrote X, but how does this reconcile with Y mentioned in section 4?"
+"What happens if the author's assumption about Z turns out to be false?"
+"The source claims A, but doesn't address B - how might B change the conclusion?"
+
+Respond in the same language as the source text and notes. Format as a numbered list of thought-provoking questions.`;
   }
 };
 
@@ -111,6 +141,36 @@ ${vaultNotes.join("\n")}
 4. \u041A\u043E\u043D\u0446\u0435\u043F\u0442\u0443\u0430\u043B\u044C\u043D\u044B\u0435 \u043C\u043E\u0441\u0442\u044B \u043C\u0435\u0436\u0434\u0443 \u0442\u0435\u043A\u0443\u0449\u0438\u043C\u0438 \u0438 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0438\u043C\u0438 \u0437\u043D\u0430\u043D\u0438\u044F\u043C\u0438
 
 \u041E\u0442\u0432\u0435\u0447\u0430\u0439 \u043D\u0430 \u0442\u043E\u043C \u0436\u0435 \u044F\u0437\u044B\u043A\u0435, \u0447\u0442\u043E \u0438 \u0438\u0441\u0445\u043E\u0434\u043D\u044B\u0439 \u0442\u0435\u043A\u0441\u0442 \u0441 \u0437\u0430\u043C\u0435\u0442\u043A\u0430\u043C\u0438. \u041E\u0444\u043E\u0440\u043C\u0438 \u043E\u0442\u0432\u0435\u0442 \u0432 \u0432\u0438\u0434\u0435 \u043A\u0430\u0440\u0442\u044B \u0441\u0432\u044F\u0437\u0435\u0439.`;
+  },
+  socraticQuestions: (sourceText, userNotes) => {
+    return `\u0422\u044B \u2014 \u0442\u0440\u0435\u043D\u0435\u0440 \u043F\u043E \u0441\u043E\u043A\u0440\u0430\u0442\u043E\u0432\u0441\u043A\u043E\u043C\u0443 \u043C\u0435\u0442\u043E\u0434\u0443. \u0422\u0432\u043E\u044F \u0437\u0430\u0434\u0430\u0447\u0430 \u2014 \u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u043F\u0440\u043E\u0432\u043E\u043A\u0430\u0446\u0438\u043E\u043D\u043D\u044B\u0435, \u0432\u044B\u0437\u044B\u0432\u0430\u044E\u0449\u0438\u0435 \u0432\u043E\u043F\u0440\u043E\u0441\u044B, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0437\u0430\u0441\u0442\u0430\u0432\u044F\u0442 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0434\u0443\u043C\u0430\u0442\u044C \u0437\u0430 \u043F\u0440\u0435\u0434\u0435\u043B\u0430\u043C\u0438 \u0442\u043E\u0433\u043E, \u0447\u0442\u043E \u044F\u0432\u043D\u043E \u0443\u043A\u0430\u0437\u0430\u043D\u043E \u0432 \u0437\u0430\u043C\u0435\u0442\u043A\u0430\u0445 \u0438 \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u043C \u043C\u0430\u0442\u0435\u0440\u0438\u0430\u043B\u0435.
+
+\u0418\u0421\u0425\u041E\u0414\u041D\u042B\u0419 \u0422\u0415\u041A\u0421\u0422:
+${sourceText}
+
+\u0417\u0410\u041C\u0415\u0422\u041A\u0418 \u041F\u041E\u041B\u042C\u0417\u041E\u0412\u0410\u0422\u0415\u041B\u042F:
+${userNotes}
+
+\u0421\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u0443\u0439 5-8 \u043F\u0440\u043E\u0432\u043E\u043A\u0430\u0446\u0438\u043E\u043D\u043D\u044B\u0445 \u0441\u043E\u043A\u0440\u0430\u0442\u043E\u0432\u0441\u043A\u0438\u0445 \u0432\u043E\u043F\u0440\u043E\u0441\u043E\u0432, \u043A\u043E\u0442\u043E\u0440\u044B\u0435:
+1. \u041E\u0441\u043F\u0430\u0440\u0438\u0432\u0430\u044E\u0442 \u043F\u0440\u0435\u0434\u043F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u044F, \u0441\u0434\u0435\u043B\u0430\u043D\u043D\u044B\u0435 \u0432 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0435 \u0438\u043B\u0438 \u0437\u0430\u043C\u0435\u0442\u043A\u0430\u0445
+2. \u0418\u0441\u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u043F\u0440\u043E\u0442\u0438\u0432\u043E\u0440\u0435\u0447\u0438\u044F \u0438\u043B\u0438 \u043D\u0430\u043F\u0440\u044F\u0436\u0435\u043D\u0438\u044F, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u044F\u0432\u043D\u043E \u043D\u0435 \u0440\u0430\u0441\u0441\u043C\u043E\u0442\u0440\u0435\u043D\u044B
+3. \u0417\u0430\u0434\u0430\u044E\u0442 \u0441\u0446\u0435\u043D\u0430\u0440\u0438\u0438 "\u0447\u0442\u043E \u0435\u0441\u043B\u0438", \u043F\u0440\u043E\u0432\u0435\u0440\u044F\u044E\u0449\u0438\u0435 \u0433\u0440\u0430\u043D\u0438\u0446\u044B \u0438\u0434\u0435\u0439
+4. \u0421\u0442\u0430\u0432\u044F\u0442 \u043F\u043E\u0434 \u0432\u043E\u043F\u0440\u043E\u0441 \u043F\u043E\u0441\u043B\u0435\u0434\u0441\u0442\u0432\u0438\u044F \u0438 \u0432\u044B\u0432\u043E\u0434\u044B, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043D\u0435 \u043E\u0441\u0432\u0435\u0449\u0435\u043D\u044B
+5. \u0418\u0441\u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u0440\u0430\u0437\u0440\u044B\u0432\u044B \u043C\u0435\u0436\u0434\u0443 \u0442\u0435\u043C, \u0447\u0442\u043E \u0441\u043A\u0430\u0437\u0430\u043D\u043E, \u0438 \u0442\u0435\u043C, \u0447\u0442\u043E \u043F\u043E\u0434\u0440\u0430\u0437\u0443\u043C\u0435\u0432\u0430\u0435\u0442\u0441\u044F
+6. \u0417\u0430\u0441\u0442\u0430\u0432\u043B\u044F\u044E\u0442 \u0447\u0438\u0442\u0430\u0442\u0435\u043B\u044F \u043F\u0440\u0438\u043C\u0438\u0440\u0438\u0442\u044C \u0440\u0430\u0437\u043D\u044B\u0435 \u0442\u043E\u0447\u043A\u0438 \u0437\u0440\u0435\u043D\u0438\u044F
+
+\u0412\u0410\u0416\u041D\u041E: \u042D\u0442\u043E \u041D\u0415 \u0434\u043E\u043B\u0436\u043D\u044B \u0431\u044B\u0442\u044C \u0442\u0435\u0441\u0442\u043E\u0432\u044B\u0435 \u0432\u043E\u043F\u0440\u043E\u0441\u044B, \u043F\u0440\u043E\u0432\u0435\u0440\u044F\u044E\u0449\u0438\u0435 \u0437\u043D\u0430\u043D\u0438\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F. \u0412\u043C\u0435\u0441\u0442\u043E \u044D\u0442\u043E\u0433\u043E, \u044D\u0442\u043E \u0434\u043E\u043B\u0436\u043D\u044B \u0431\u044B\u0442\u044C \u0432\u043E\u043F\u0440\u043E\u0441\u044B, \u043A\u043E\u0442\u043E\u0440\u044B\u0435:
+- \u0417\u0430\u043C\u0435\u0442\u043A\u0438 \u043D\u0435 \u043E\u0442\u0432\u0435\u0447\u0430\u044E\u0442 \u043D\u0430\u043F\u0440\u044F\u043C\u0443\u044E
+- \u041E\u0441\u043F\u0430\u0440\u0438\u0432\u0430\u044E\u0442 \u0431\u0430\u0437\u043E\u0432\u044B\u0435 \u043F\u0440\u0435\u0434\u043F\u043E\u0441\u044B\u043B\u043A\u0438
+- \u0417\u0430\u0441\u0442\u0430\u0432\u043B\u044F\u044E\u0442 \u043A\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u043C\u044B\u0441\u043B\u0438\u0442\u044C \u043E \u043D\u0435\u0432\u044B\u0441\u043A\u0430\u0437\u0430\u043D\u043D\u044B\u0445 \u043F\u0440\u0435\u0434\u043F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u044F\u0445
+- \u0418\u0441\u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u043A\u0440\u0430\u0439\u043D\u0438\u0435 \u0441\u043B\u0443\u0447\u0430\u0438 \u0438 \u043A\u043E\u043D\u0442\u0440\u043F\u0440\u0438\u043C\u0435\u0440\u044B
+
+\u041F\u0440\u0438\u043C\u0435\u0440\u044B \u0444\u043E\u0440\u043C\u0430\u0442\u0430:
+"\u0422\u044B \u043D\u0430\u043F\u0438\u0441\u0430\u043B X, \u043D\u043E \u043A\u0430\u043A \u044D\u0442\u043E \u0441\u043E\u0433\u043B\u0430\u0441\u0443\u0435\u0442\u0441\u044F \u0441 Y, \u043E \u0447\u0451\u043C \u0430\u0432\u0442\u043E\u0440 \u0433\u043E\u0432\u043E\u0440\u0438\u0442 \u0432 \u0440\u0430\u0437\u0434\u0435\u043B\u0435 4?"
+"\u0427\u0442\u043E \u043F\u0440\u043E\u0438\u0437\u043E\u0439\u0434\u0451\u0442, \u0435\u0441\u043B\u0438 \u043F\u0440\u0435\u0434\u043F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u0435 \u0430\u0432\u0442\u043E\u0440\u0430 \u043E Z \u043E\u043A\u0430\u0436\u0435\u0442\u0441\u044F \u043D\u0435\u0432\u0435\u0440\u043D\u044B\u043C?"
+"\u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0430\u0435\u0442 A, \u043D\u043E \u043D\u0435 \u0440\u0430\u0441\u0441\u043C\u0430\u0442\u0440\u0438\u0432\u0430\u0435\u0442 B \u2014 \u043A\u0430\u043A B \u043C\u043E\u0436\u0435\u0442 \u0438\u0437\u043C\u0435\u043D\u0438\u0442\u044C \u0432\u044B\u0432\u043E\u0434?"
+
+\u041E\u0442\u0432\u0435\u0447\u0430\u0439 \u043D\u0430 \u0442\u043E\u043C \u0436\u0435 \u044F\u0437\u044B\u043A\u0435, \u0447\u0442\u043E \u0438 \u0438\u0441\u0445\u043E\u0434\u043D\u044B\u0439 \u0442\u0435\u043A\u0441\u0442 \u0441 \u0437\u0430\u043C\u0435\u0442\u043A\u0430\u043C\u0438. \u041E\u0444\u043E\u0440\u043C\u0438 \u0432 \u0432\u0438\u0434\u0435 \u043D\u0443\u043C\u0435\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u0433\u043E \u0441\u043F\u0438\u0441\u043A\u0430 \u043F\u0440\u043E\u0432\u043E\u043A\u0430\u0446\u0438\u043E\u043D\u043D\u044B\u0445 \u0432\u043E\u043F\u0440\u043E\u0441\u043E\u0432.`;
   }
 };
 
@@ -121,7 +181,9 @@ var DEFAULT_SETTINGS = {
     depthCheckEN: "",
     depthCheckRU: "",
     connectionFinderEN: "",
-    connectionFinderRU: ""
+    connectionFinderRU: "",
+    socraticQuestionsEN: "",
+    socraticQuestionsRU: ""
   },
   aiProvider: "openai",
   openaiApiKey: "",
@@ -134,6 +196,7 @@ var DEFAULT_SETTINGS = {
   openrouterModel: "anthropic/claude-2",
   depthCheckEnabled: true,
   connectionFinderEnabled: true,
+  socraticQuestionsEnabled: true,
   temperature: 0.7
 };
 var ReadingCoachSettingTab = class extends import_obsidian.PluginSettingTab {
@@ -212,6 +275,10 @@ var ReadingCoachSettingTab = class extends import_obsidian.PluginSettingTab {
       this.plugin.settings.connectionFinderEnabled = value;
       await this.plugin.saveSettings();
     }));
+    new import_obsidian.Setting(containerEl).setName("Socratic Questions").setDesc("Generate provocative questions that challenge assumptions").addToggle((toggle) => toggle.setValue(this.plugin.settings.socraticQuestionsEnabled).onChange(async (value) => {
+      this.plugin.settings.socraticQuestionsEnabled = value;
+      await this.plugin.saveSettings();
+    }));
     containerEl.createEl("h3", { text: "Custom Prompts" });
     containerEl.createEl("p", {
       text: "Customize AI prompts for each mode. Leave empty to use defaults. Use {sourceText}, {userNotes}, and {vaultNotes} as placeholders.",
@@ -264,6 +331,30 @@ var ReadingCoachSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("").addButton((button) => button.setButtonText("Show Default RU Prompt").onClick(() => {
       const defaultPrompt = PromptsRU.connectionFinder("{sourceText}", "{userNotes}", ["{vaultNotes}"]);
       new PromptPreviewModal(this.app, "Default Connection Finder Prompt (RU)", defaultPrompt).open();
+    }));
+    new import_obsidian.Setting(containerEl).setName("Socratic Questions Prompt (English)").setDesc("Custom prompt for Socratic Questions mode in English").addTextArea((text) => {
+      text.setPlaceholder("Leave empty for default prompt").setValue(this.plugin.settings.customPrompts.socraticQuestionsEN).onChange(async (value) => {
+        this.plugin.settings.customPrompts.socraticQuestionsEN = value;
+        await this.plugin.saveSettings();
+      });
+      text.inputEl.rows = 8;
+      text.inputEl.cols = 50;
+    });
+    new import_obsidian.Setting(containerEl).setName("").addButton((button) => button.setButtonText("Show Default EN Prompt").onClick(() => {
+      const defaultPrompt = PromptsEN.socraticQuestions("{sourceText}", "{userNotes}");
+      new PromptPreviewModal(this.app, "Default Socratic Questions Prompt (EN)", defaultPrompt).open();
+    }));
+    new import_obsidian.Setting(containerEl).setName("Socratic Questions Prompt (Russian)").setDesc("Custom prompt for Socratic Questions mode in Russian").addTextArea((text) => {
+      text.setPlaceholder("\u041E\u0441\u0442\u0430\u0432\u044C\u0442\u0435 \u043F\u0443\u0441\u0442\u044B\u043C \u0434\u043B\u044F \u043F\u0440\u043E\u043C\u043F\u0442\u0430 \u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E").setValue(this.plugin.settings.customPrompts.socraticQuestionsRU).onChange(async (value) => {
+        this.plugin.settings.customPrompts.socraticQuestionsRU = value;
+        await this.plugin.saveSettings();
+      });
+      text.inputEl.rows = 8;
+      text.inputEl.cols = 50;
+    });
+    new import_obsidian.Setting(containerEl).setName("").addButton((button) => button.setButtonText("Show Default RU Prompt").onClick(() => {
+      const defaultPrompt = PromptsRU.socraticQuestions("{sourceText}", "{userNotes}");
+      new PromptPreviewModal(this.app, "Default Socratic Questions Prompt (RU)", defaultPrompt).open();
     }));
   }
 };
@@ -425,6 +516,12 @@ var Prompts = class {
     }
     return language === "ru" ? PromptsRU.connectionFinder(sourceText, userNotes, vaultNotes) : PromptsEN.connectionFinder(sourceText, userNotes, vaultNotes);
   }
+  static socraticQuestions(sourceText, userNotes, language = "en", customPrompt) {
+    if (customPrompt && customPrompt.trim()) {
+      return customPrompt.replace(/{sourceText}/g, sourceText).replace(/{userNotes}/g, userNotes);
+    }
+    return language === "ru" ? PromptsRU.socraticQuestions(sourceText, userNotes) : PromptsEN.socraticQuestions(sourceText, userNotes);
+  }
 };
 
 // src/views/resultModal.ts
@@ -551,11 +648,426 @@ var ConnectionFinderMode = class {
   }
 };
 
+// src/modes/socraticQuestions.ts
+var import_obsidian6 = require("obsidian");
+
+// src/views/socraticInteractiveModal.ts
+var import_obsidian5 = require("obsidian");
+var SocraticInteractiveModal = class extends import_obsidian5.Modal {
+  constructor(app, questions, sourceText, userNotes, settings) {
+    super(app);
+    this.questions = [];
+    this.currentQuestionIndex = 0;
+    this.answeredQuestions = [];
+    this.isEvaluating = false;
+    this.questions = questions;
+    this.sourceText = sourceText;
+    this.userNotes = userNotes;
+    this.settings = settings;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.addClass("reading-coach-modal");
+    contentEl.addClass("socratic-interactive-modal");
+    this.renderCurrentQuestion();
+  }
+  renderCurrentQuestion() {
+    const { contentEl } = this;
+    contentEl.empty();
+    const header = contentEl.createDiv({ cls: "reading-coach-modal-header" });
+    header.createEl("h2", { text: "Socratic Questions - Interactive Mode" });
+    const progress = header.createDiv({ cls: "socratic-progress" });
+    progress.createEl("span", {
+      text: `Question ${this.currentQuestionIndex + 1} of ${this.questions.length}`
+    });
+    const questionContainer = contentEl.createDiv({ cls: "socratic-question-container" });
+    const questionDiv = questionContainer.createDiv({ cls: "socratic-question" });
+    import_obsidian5.MarkdownRenderer.renderMarkdown(
+      `**Question ${this.currentQuestionIndex + 1}:**
+
+${this.questions[this.currentQuestionIndex]}`,
+      questionDiv,
+      "",
+      null
+    );
+    const answerContainer = contentEl.createDiv({ cls: "socratic-answer-container" });
+    answerContainer.createEl("label", { text: "Your Answer:", cls: "socratic-label" });
+    const textarea = answerContainer.createEl("textarea", {
+      cls: "socratic-answer-input",
+      attr: {
+        placeholder: "Type your answer here... Be thoughtful and detailed.",
+        rows: "8"
+      }
+    });
+    const footer = contentEl.createDiv({ cls: "reading-coach-modal-footer" });
+    const submitBtn = footer.createEl("button", {
+      text: "Submit Answer",
+      cls: "mod-cta"
+    });
+    submitBtn.addEventListener("click", async () => {
+      const answer = textarea.value.trim();
+      if (!answer) {
+        new import_obsidian5.Notice("Please provide an answer");
+        return;
+      }
+      if (this.isEvaluating) {
+        new import_obsidian5.Notice("Please wait, evaluating...");
+        return;
+      }
+      await this.evaluateAnswer(answer);
+    });
+    const skipBtn = footer.createEl("button", {
+      text: "Skip Question",
+      cls: "mod-warning"
+    });
+    skipBtn.addEventListener("click", () => {
+      this.answeredQuestions.push({
+        question: this.questions[this.currentQuestionIndex],
+        userAnswer: "",
+        aiEvaluation: "Skipped",
+        score: 0
+      });
+      this.moveToNextQuestion();
+    });
+    const cancelBtn = footer.createEl("button", { text: "Cancel" });
+    cancelBtn.addEventListener("click", () => {
+      this.close();
+    });
+  }
+  async evaluateAnswer(answer) {
+    this.isEvaluating = true;
+    new import_obsidian5.Notice("Evaluating your answer...");
+    const provider = new AIProvider(this.settings);
+    const evaluationPrompt = this.buildEvaluationPrompt(
+      this.questions[this.currentQuestionIndex],
+      answer
+    );
+    const response = await provider.generate(evaluationPrompt);
+    if (response.error) {
+      new import_obsidian5.Notice(`Error: ${response.error}`);
+      this.isEvaluating = false;
+      return;
+    }
+    const score = this.extractScore(response.content);
+    this.answeredQuestions.push({
+      question: this.questions[this.currentQuestionIndex],
+      userAnswer: answer,
+      aiEvaluation: response.content,
+      score
+    });
+    this.isEvaluating = false;
+    this.showEvaluationResult(response.content, score);
+  }
+  buildEvaluationPrompt(question, answer) {
+    const lang = this.settings.promptLanguage === "ru" ? "ru" : "en";
+    if (lang === "ru") {
+      return `\u0422\u044B \u2014 \u0442\u0440\u0435\u043D\u0435\u0440 \u043F\u043E \u0441\u043E\u043A\u0440\u0430\u0442\u043E\u0432\u0441\u043A\u043E\u043C\u0443 \u043C\u0435\u0442\u043E\u0434\u0443. \u041E\u0446\u0435\u043D\u0438 \u043E\u0442\u0432\u0435\u0442 \u0441\u0442\u0443\u0434\u0435\u043D\u0442\u0430 \u043D\u0430 \u043F\u0440\u043E\u0432\u043E\u043A\u0430\u0446\u0438\u043E\u043D\u043D\u044B\u0439 \u0432\u043E\u043F\u0440\u043E\u0441.
+
+\u0418\u0421\u0425\u041E\u0414\u041D\u042B\u0419 \u041C\u0410\u0422\u0415\u0420\u0418\u0410\u041B:
+${this.sourceText}
+
+\u0417\u0410\u041C\u0415\u0422\u041A\u0418 \u0421\u0422\u0423\u0414\u0415\u041D\u0422\u0410:
+${this.userNotes}
+
+\u0412\u041E\u041F\u0420\u041E\u0421:
+${question}
+
+\u041E\u0422\u0412\u0415\u0422 \u0421\u0422\u0423\u0414\u0415\u041D\u0422\u0410:
+${answer}
+
+\u041E\u0446\u0435\u043D\u0438 \u043E\u0442\u0432\u0435\u0442 \u043F\u043E \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u043C \u043A\u0440\u0438\u0442\u0435\u0440\u0438\u044F\u043C:
+1. \u0413\u043B\u0443\u0431\u0438\u043D\u0430 \u043C\u044B\u0448\u043B\u0435\u043D\u0438\u044F (\u043D\u0430\u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0433\u043B\u0443\u0431\u043E\u043A\u043E \u0441\u0442\u0443\u0434\u0435\u043D\u0442 \u0440\u0430\u0437\u043C\u044B\u0448\u043B\u044F\u0435\u0442)
+2. \u041A\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u043C\u044B\u0448\u043B\u0435\u043D\u0438\u0435 (\u043E\u0441\u043F\u0430\u0440\u0438\u0432\u0430\u0435\u0442 \u043B\u0438 \u043F\u0440\u0435\u0434\u043F\u043E\u043B\u043E\u0436\u0435\u043D\u0438\u044F)
+3. \u0421\u0432\u044F\u0437\u043D\u043E\u0441\u0442\u044C \u0430\u0440\u0433\u0443\u043C\u0435\u043D\u0442\u0430\u0446\u0438\u0438
+4. \u041E\u0442\u043A\u0440\u044B\u0442\u043E\u0441\u0442\u044C \u043A \u043D\u0435\u043E\u043F\u0440\u0435\u0434\u0435\u043B\u0451\u043D\u043D\u043E\u0441\u0442\u0438
+5. \u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u0435 \u043A\u043E\u043D\u0442\u0435\u043A\u0441\u0442\u0430 \u0438\u0437 \u043C\u0430\u0442\u0435\u0440\u0438\u0430\u043B\u0430
+
+\u041F\u0440\u0435\u0434\u043E\u0441\u0442\u0430\u0432\u044C:
+- \u041A\u0440\u0430\u0442\u043A\u0443\u044E \u043E\u0446\u0435\u043D\u043A\u0443 \u043E\u0442\u0432\u0435\u0442\u0430 (2-3 \u043F\u0440\u0435\u0434\u043B\u043E\u0436\u0435\u043D\u0438\u044F)
+- \u0427\u0442\u043E \u0445\u043E\u0440\u043E\u0448\u043E \u0432 \u043E\u0442\u0432\u0435\u0442\u0435
+- \u0427\u0442\u043E \u043C\u043E\u0436\u043D\u043E \u0443\u043B\u0443\u0447\u0448\u0438\u0442\u044C
+- \u041E\u0446\u0435\u043D\u043A\u0443 \u043E\u0442 0 \u0434\u043E 10 (\u0433\u0434\u0435 10 - \u043E\u0442\u043B\u0438\u0447\u043D\u043E\u0435 \u043A\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u043C\u044B\u0448\u043B\u0435\u043D\u0438\u0435)
+
+\u0412\u0410\u0416\u041D\u041E: \u0412 \u043F\u0435\u0440\u0432\u043E\u0439 \u0441\u0442\u0440\u043E\u043A\u0435 \u043E\u0442\u0432\u0435\u0442\u0430 \u0443\u043A\u0430\u0436\u0438 \u043E\u0446\u0435\u043D\u043A\u0443 \u0432 \u0444\u043E\u0440\u043C\u0430\u0442\u0435 "SCORE: X/10"
+
+\u041E\u0442\u0432\u0435\u0447\u0430\u0439 \u043D\u0430 \u0440\u0443\u0441\u0441\u043A\u043E\u043C \u044F\u0437\u044B\u043A\u0435.`;
+    } else {
+      return `You are a Socratic questioning coach. Evaluate the student's answer to a provocative question.
+
+SOURCE MATERIAL:
+${this.sourceText}
+
+STUDENT'S NOTES:
+${this.userNotes}
+
+QUESTION:
+${question}
+
+STUDENT'S ANSWER:
+${answer}
+
+Evaluate the answer based on:
+1. Depth of thinking (how deeply the student reflects)
+2. Critical thinking (challenges assumptions)
+3. Coherence of argumentation
+4. Openness to uncertainty
+5. Use of context from the material
+
+Provide:
+- Brief evaluation of the answer (2-3 sentences)
+- What's good about the answer
+- What could be improved
+- Score from 0 to 10 (where 10 is excellent critical thinking)
+
+IMPORTANT: In the first line of your response, include the score in format "SCORE: X/10"
+
+Respond in English.`;
+    }
+  }
+  extractScore(evaluation) {
+    const scoreMatch = evaluation.match(/SCORE:\s*(\d+)\/10/i);
+    if (scoreMatch) {
+      return parseInt(scoreMatch[1]);
+    }
+    const fallbackMatch = evaluation.match(/(\d+)\/10/);
+    if (fallbackMatch) {
+      return parseInt(fallbackMatch[1]);
+    }
+    return 5;
+  }
+  showEvaluationResult(evaluation, score) {
+    const { contentEl } = this;
+    contentEl.empty();
+    const header = contentEl.createDiv({ cls: "reading-coach-modal-header" });
+    header.createEl("h2", { text: "Evaluation Result" });
+    const scoreContainer = contentEl.createDiv({ cls: "socratic-score-container" });
+    const scoreDiv = scoreContainer.createDiv({ cls: "socratic-score-display" });
+    scoreDiv.createEl("div", {
+      text: `${score}/10`,
+      cls: `socratic-score ${this.getScoreClass(score)}`
+    });
+    const evalContainer = contentEl.createDiv({ cls: "socratic-evaluation-content" });
+    import_obsidian5.MarkdownRenderer.renderMarkdown(
+      evaluation,
+      evalContainer,
+      "",
+      null
+    );
+    const footer = contentEl.createDiv({ cls: "reading-coach-modal-footer" });
+    if (this.currentQuestionIndex < this.questions.length - 1) {
+      const nextBtn = footer.createEl("button", {
+        text: "Next Question",
+        cls: "mod-cta"
+      });
+      nextBtn.addEventListener("click", () => {
+        this.moveToNextQuestion();
+      });
+    } else {
+      const finishBtn = footer.createEl("button", {
+        text: "View Final Results",
+        cls: "mod-cta"
+      });
+      finishBtn.addEventListener("click", () => {
+        this.showFinalResults();
+      });
+    }
+    const closeBtn = footer.createEl("button", { text: "Close" });
+    closeBtn.addEventListener("click", () => {
+      this.close();
+    });
+  }
+  getScoreClass(score) {
+    if (score >= 8)
+      return "score-excellent";
+    if (score >= 6)
+      return "score-good";
+    if (score >= 4)
+      return "score-fair";
+    return "score-poor";
+  }
+  moveToNextQuestion() {
+    this.currentQuestionIndex++;
+    if (this.currentQuestionIndex < this.questions.length) {
+      this.renderCurrentQuestion();
+    } else {
+      this.showFinalResults();
+    }
+  }
+  showFinalResults() {
+    const { contentEl } = this;
+    contentEl.empty();
+    const header = contentEl.createDiv({ cls: "reading-coach-modal-header" });
+    header.createEl("h2", { text: "Final Results - Socratic Questions" });
+    const totalScore = this.answeredQuestions.reduce((sum, q) => sum + q.score, 0);
+    const averageScore = this.answeredQuestions.length > 0 ? (totalScore / this.answeredQuestions.length).toFixed(1) : "0";
+    const summaryContainer = contentEl.createDiv({ cls: "socratic-summary-container" });
+    const overallScore = summaryContainer.createDiv({ cls: "socratic-overall-score" });
+    overallScore.createEl("h3", { text: "Overall Understanding" });
+    overallScore.createEl("div", {
+      text: `${averageScore}/10`,
+      cls: `socratic-score-large ${this.getScoreClass(parseFloat(averageScore))}`
+    });
+    const stats = summaryContainer.createDiv({ cls: "socratic-stats" });
+    stats.createEl("p", { text: `Questions Answered: ${this.answeredQuestions.filter((q) => q.userAnswer).length}/${this.questions.length}` });
+    stats.createEl("p", { text: `Questions Skipped: ${this.answeredQuestions.filter((q) => !q.userAnswer).length}` });
+    const resultsContainer = contentEl.createDiv({ cls: "socratic-detailed-results" });
+    resultsContainer.createEl("h3", { text: "Detailed Results" });
+    this.answeredQuestions.forEach((q, index) => {
+      const questionBlock = resultsContainer.createDiv({ cls: "socratic-result-block" });
+      questionBlock.createEl("h4", { text: `Question ${index + 1} - Score: ${q.score}/10` });
+      const questionDiv = questionBlock.createDiv({ cls: "socratic-result-question" });
+      import_obsidian5.MarkdownRenderer.renderMarkdown(q.question, questionDiv, "", null);
+      if (q.userAnswer) {
+        questionBlock.createEl("strong", { text: "Your Answer:" });
+        questionBlock.createEl("p", { text: q.userAnswer, cls: "socratic-user-answer" });
+        questionBlock.createEl("strong", { text: "Evaluation:" });
+        const evalDiv = questionBlock.createDiv({ cls: "socratic-result-evaluation" });
+        import_obsidian5.MarkdownRenderer.renderMarkdown(q.aiEvaluation, evalDiv, "", null);
+      } else {
+        questionBlock.createEl("p", { text: "Skipped", cls: "socratic-skipped" });
+      }
+    });
+    const footer = contentEl.createDiv({ cls: "reading-coach-modal-footer" });
+    const closeBtn = footer.createEl("button", { text: "Close", cls: "mod-cta" });
+    closeBtn.addEventListener("click", () => {
+      this.close();
+    });
+  }
+  onClose() {
+    const { contentEl } = this;
+    contentEl.empty();
+  }
+};
+
+// src/modes/socraticQuestions.ts
+var SocraticQuestionsMode = class {
+  constructor(plugin) {
+    this.plugin = plugin;
+  }
+  async execute(sourceText, userNotes) {
+    if (!this.plugin.settings.socraticQuestionsEnabled) {
+      new import_obsidian6.Notice("Socratic Questions mode is disabled in settings");
+      return;
+    }
+    new SocraticModeSelectionModal(
+      this.plugin.app,
+      async (interactive) => {
+        if (interactive) {
+          await this.executeInteractive(sourceText, userNotes);
+        } else {
+          await this.executeStatic(sourceText, userNotes);
+        }
+      }
+    ).open();
+  }
+  async executeStatic(sourceText, userNotes) {
+    new import_obsidian6.Notice("Generating provocative questions...");
+    const detectedLang = LanguageDetector.detectFromBoth(sourceText, userNotes);
+    const lang = this.plugin.settings.promptLanguage === "auto" ? detectedLang : this.plugin.settings.promptLanguage;
+    const provider = new AIProvider(this.plugin.settings);
+    const customPrompt = lang === "ru" ? this.plugin.settings.customPrompts.socraticQuestionsRU : this.plugin.settings.customPrompts.socraticQuestionsEN;
+    const prompt = Prompts.socraticQuestions(sourceText, userNotes, lang, customPrompt);
+    const response = await provider.generate(prompt);
+    if (response.error) {
+      new import_obsidian6.Notice(`Error: ${response.error}`);
+      return;
+    }
+    new ResultModal(this.plugin.app, "Socratic Questions", response.content).open();
+  }
+  async executeInteractive(sourceText, userNotes) {
+    new import_obsidian6.Notice("Generating questions for interactive mode...");
+    const detectedLang = LanguageDetector.detectFromBoth(sourceText, userNotes);
+    const lang = this.plugin.settings.promptLanguage === "auto" ? detectedLang : this.plugin.settings.promptLanguage;
+    const provider = new AIProvider(this.plugin.settings);
+    const customPrompt = lang === "ru" ? this.plugin.settings.customPrompts.socraticQuestionsRU : this.plugin.settings.customPrompts.socraticQuestionsEN;
+    const prompt = Prompts.socraticQuestions(sourceText, userNotes, lang, customPrompt);
+    const response = await provider.generate(prompt);
+    if (response.error) {
+      new import_obsidian6.Notice(`Error: ${response.error}`);
+      return;
+    }
+    const questions = this.parseQuestions(response.content);
+    if (questions.length === 0) {
+      new import_obsidian6.Notice("Failed to parse questions. Please try again.");
+      return;
+    }
+    new SocraticInteractiveModal(
+      this.plugin.app,
+      questions,
+      sourceText,
+      userNotes,
+      this.plugin.settings
+    ).open();
+  }
+  parseQuestions(content) {
+    const lines = content.split("\n");
+    const questions = [];
+    let currentQuestion = "";
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (/^\d+[\.\)]\s+/.test(trimmed)) {
+        if (currentQuestion) {
+          questions.push(currentQuestion.trim());
+        }
+        currentQuestion = trimmed.replace(/^\d+[\.\)]\s+/, "");
+      } else if (currentQuestion && trimmed) {
+        currentQuestion += " " + trimmed;
+      }
+    }
+    if (currentQuestion) {
+      questions.push(currentQuestion.trim());
+    }
+    return questions;
+  }
+};
+var SocraticModeSelectionModal = class extends import_obsidian6.Modal {
+  constructor(app, onSelect) {
+    super(app);
+    this.onSelect = onSelect;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.createEl("h2", { text: "Select Socratic Questions Mode" });
+    contentEl.createEl("p", {
+      text: "Choose how you want to receive the questions:",
+      cls: "setting-item-description"
+    });
+    const staticBtn = contentEl.createDiv({ cls: "socratic-mode-option" });
+    staticBtn.createEl("h3", { text: "\u{1F4C4} Static Mode" });
+    staticBtn.createEl("p", { text: "View all questions at once without interaction" });
+    const staticButton = staticBtn.createEl("button", {
+      text: "Use Static Mode",
+      cls: "mod-cta"
+    });
+    staticButton.addEventListener("click", () => {
+      this.close();
+      this.onSelect(false);
+    });
+    const interactiveBtn = contentEl.createDiv({ cls: "socratic-mode-option" });
+    interactiveBtn.createEl("h3", { text: "\u{1F4AC} Interactive Mode" });
+    interactiveBtn.createEl("p", { text: "Answer questions one by one and receive AI evaluation with scores" });
+    const interactiveButton = interactiveBtn.createEl("button", {
+      text: "Use Interactive Mode",
+      cls: "mod-cta"
+    });
+    interactiveButton.addEventListener("click", () => {
+      this.close();
+      this.onSelect(true);
+    });
+  }
+  onClose() {
+    const { contentEl } = this;
+    contentEl.empty();
+  }
+};
+
 // src/views/sourceInputModal.ts
-var import_obsidian7 = require("obsidian");
+var import_obsidian9 = require("obsidian");
 
 // src/utils/textExtractor.ts
-var import_obsidian5 = require("obsidian");
+var import_obsidian7 = require("obsidian");
 var TextExtractor = class {
   static async extractFromUrl(url) {
     console.log("[TextExtractor] Starting extraction from URL:", url);
@@ -568,7 +1080,7 @@ var TextExtractor = class {
     }
     try {
       console.log("[TextExtractor] Fetching URL with requestUrl...");
-      const response = await (0, import_obsidian5.requestUrl)({
+      const response = await (0, import_obsidian7.requestUrl)({
         url,
         method: "GET",
         headers: {
@@ -661,7 +1173,7 @@ var TextExtractor = class {
 };
 
 // src/utils/youtubeTranscript.ts
-var import_obsidian6 = require("obsidian");
+var import_obsidian8 = require("obsidian");
 var YouTubeTranscript = class {
   static extractVideoId(url) {
     console.log("[YouTubeTranscript] Extracting video ID from:", url);
@@ -679,7 +1191,7 @@ var YouTubeTranscript = class {
     console.log("[YouTubeTranscript] Fetching transcript for video:", videoId, "language:", lang);
     try {
       console.log("[YouTubeTranscript] Fetching video page with requestUrl...");
-      const videoPageResponse = await (0, import_obsidian6.requestUrl)({
+      const videoPageResponse = await (0, import_obsidian8.requestUrl)({
         url: `https://www.youtube.com/watch?v=${videoId}`,
         method: "GET"
       });
@@ -729,7 +1241,7 @@ var YouTubeTranscript = class {
       console.log("[YouTubeTranscript] Selected caption track:", captionTrack.languageCode);
       console.log("[YouTubeTranscript] Caption URL:", captionTrack.baseUrl.substring(0, 100));
       console.log("[YouTubeTranscript] Fetching transcript XML with requestUrl...");
-      const transcriptResponse = await (0, import_obsidian6.requestUrl)({
+      const transcriptResponse = await (0, import_obsidian8.requestUrl)({
         url: captionTrack.baseUrl,
         method: "GET"
       });
@@ -793,7 +1305,7 @@ var YouTubeTranscript = class {
 YouTubeTranscript.YOUTUBE_REGEX = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/;
 
 // src/views/sourceInputModal.ts
-var SourceInputModal = class extends import_obsidian7.Modal {
+var SourceInputModal = class extends import_obsidian9.Modal {
   constructor(app, onSubmit) {
     super(app);
     this.urlInput = "";
@@ -810,7 +1322,7 @@ var SourceInputModal = class extends import_obsidian7.Modal {
       text: "Enter a URL (article or YouTube video) or paste the source text directly.",
       cls: "setting-item-description"
     });
-    new import_obsidian7.Setting(contentEl).setName("URL").setDesc("Article URL or YouTube video link").addText((text) => {
+    new import_obsidian9.Setting(contentEl).setName("URL").setDesc("Article URL or YouTube video link").addText((text) => {
       text.setPlaceholder("https://example.com/article or https://youtube.com/watch?v=...").setValue(this.urlInput).onChange((value) => {
         this.urlInput = value;
       });
@@ -824,7 +1336,7 @@ var SourceInputModal = class extends import_obsidian7.Modal {
     });
     divider.style.textAlign = "center";
     divider.style.margin = "1em 0";
-    new import_obsidian7.Setting(contentEl).setName("Source Text").setDesc("Paste the source text directly (or parsed from URL above)").addTextArea((text) => {
+    new import_obsidian9.Setting(contentEl).setName("Source Text").setDesc("Paste the source text directly (or parsed from URL above)").addTextArea((text) => {
       this.textAreaComponent = text;
       text.setPlaceholder("Paste source text here...").setValue(this.textInput).onChange((value) => {
         this.textInput = value;
@@ -832,7 +1344,7 @@ var SourceInputModal = class extends import_obsidian7.Modal {
       text.inputEl.rows = 12;
       text.inputEl.style.width = "100%";
     });
-    new import_obsidian7.Setting(contentEl).addButton((btn) => btn.setButtonText("Cancel").onClick(() => {
+    new import_obsidian9.Setting(contentEl).addButton((btn) => btn.setButtonText("Cancel").onClick(() => {
       this.close();
     })).addButton((btn) => btn.setButtonText("Analyze").setCta().setDisabled(this.isProcessing).onClick(async () => {
       await this.handleSubmit();
@@ -840,7 +1352,7 @@ var SourceInputModal = class extends import_obsidian7.Modal {
   }
   async handleUrlParse() {
     if (!this.urlInput.trim()) {
-      new import_obsidian7.Notice("Please enter a URL");
+      new import_obsidian9.Notice("Please enter a URL");
       return;
     }
     const url = this.urlInput.trim();
@@ -849,28 +1361,28 @@ var SourceInputModal = class extends import_obsidian7.Modal {
     try {
       if (YouTubeTranscript.isYouTubeUrl(url)) {
         console.log("[SourceInputModal] Detected YouTube URL");
-        new import_obsidian7.Notice("Fetching YouTube transcript...");
+        new import_obsidian9.Notice("Fetching YouTube transcript...");
         const transcript = await YouTubeTranscript.getTranscriptFromUrl(url);
         console.log("[SourceInputModal] YouTube transcript received, length:", transcript.length);
         this.textInput = transcript;
         if (this.textAreaComponent) {
           this.textAreaComponent.setValue(transcript);
         }
-        new import_obsidian7.Notice(`\u2713 Extracted ${transcript.length} characters from YouTube video`);
+        new import_obsidian9.Notice(`\u2713 Extracted ${transcript.length} characters from YouTube video`);
       } else {
         console.log("[SourceInputModal] Detected article URL");
-        new import_obsidian7.Notice("Fetching article from URL...");
+        new import_obsidian9.Notice("Fetching article from URL...");
         const sourceText = await TextExtractor.extractFromUrl(url);
         console.log("[SourceInputModal] Article text received, length:", sourceText.length);
         this.textInput = sourceText;
         if (this.textAreaComponent) {
           this.textAreaComponent.setValue(sourceText);
         }
-        new import_obsidian7.Notice(`\u2713 Extracted ${sourceText.length} characters from article`);
+        new import_obsidian9.Notice(`\u2713 Extracted ${sourceText.length} characters from article`);
       }
     } catch (error) {
       console.error("[SourceInputModal] Error during URL parse:", error);
-      new import_obsidian7.Notice(`Error: ${error.message}`);
+      new import_obsidian9.Notice(`Error: ${error.message}`);
     } finally {
       this.isProcessing = false;
       console.log("[SourceInputModal] URL parse completed");
@@ -887,7 +1399,7 @@ var SourceInputModal = class extends import_obsidian7.Modal {
       const sourceText = TextExtractor.extractFromText(this.textInput.trim());
       if (sourceText.length < 50) {
         console.log("[SourceInputModal] Text too short:", sourceText.length);
-        new import_obsidian7.Notice("Source text is too short. Please provide more content.");
+        new import_obsidian9.Notice("Source text is too short. Please provide more content.");
         return;
       }
       console.log("[SourceInputModal] Submitting source text, length:", sourceText.length);
@@ -895,7 +1407,7 @@ var SourceInputModal = class extends import_obsidian7.Modal {
       this.onSubmit(sourceText);
     } else {
       console.log("[SourceInputModal] No text provided");
-      new import_obsidian7.Notice("Please provide source text or parse a URL first");
+      new import_obsidian9.Notice("Please provide source text or parse a URL first");
     }
   }
   onClose() {
@@ -905,13 +1417,14 @@ var SourceInputModal = class extends import_obsidian7.Modal {
 };
 
 // main.ts
-var ReadingCoachPlugin = class extends import_obsidian8.Plugin {
+var ReadingCoachPlugin = class extends import_obsidian10.Plugin {
   async onload() {
     await this.loadSettings();
     this.depthCheckMode = new DepthCheckMode(this);
     this.connectionFinderMode = new ConnectionFinderMode(this);
+    this.socraticQuestionsMode = new SocraticQuestionsMode(this);
     this.addRibbonIcon("book-open", "Reading Coach", () => {
-      new import_obsidian8.Notice("Reading Coach: Use command palette to select a mode");
+      new import_obsidian10.Notice("Reading Coach: Use command palette to select a mode");
     });
     this.addCommand({
       id: "depth-check",
@@ -927,6 +1440,13 @@ var ReadingCoachPlugin = class extends import_obsidian8.Plugin {
         await this.runConnectionFinder();
       }
     });
+    this.addCommand({
+      id: "socratic-questions",
+      name: "Reading Coach: Socratic Questions",
+      callback: async () => {
+        await this.runSocraticQuestions();
+      }
+    });
     this.addSettingTab(new ReadingCoachSettingTab(this.app, this));
     console.log("Reading Coach plugin loaded");
   }
@@ -940,14 +1460,14 @@ var ReadingCoachPlugin = class extends import_obsidian8.Plugin {
     await this.saveData(this.settings);
   }
   async runDepthCheck() {
-    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian8.MarkdownView);
+    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian10.MarkdownView);
     if (!activeView) {
-      new import_obsidian8.Notice("Please open a note first");
+      new import_obsidian10.Notice("Please open a note first");
       return;
     }
     const userNotes = activeView.editor.getValue();
     if (!userNotes) {
-      new import_obsidian8.Notice("Current note is empty");
+      new import_obsidian10.Notice("Current note is empty");
       return;
     }
     new SourceInputModal(this.app, async (sourceText) => {
@@ -955,18 +1475,33 @@ var ReadingCoachPlugin = class extends import_obsidian8.Plugin {
     }).open();
   }
   async runConnectionFinder() {
-    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian8.MarkdownView);
+    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian10.MarkdownView);
     if (!activeView) {
-      new import_obsidian8.Notice("Please open a note first");
+      new import_obsidian10.Notice("Please open a note first");
       return;
     }
     const userNotes = activeView.editor.getValue();
     if (!userNotes) {
-      new import_obsidian8.Notice("Current note is empty");
+      new import_obsidian10.Notice("Current note is empty");
       return;
     }
     new SourceInputModal(this.app, async (sourceText) => {
       await this.connectionFinderMode.execute(sourceText, userNotes);
+    }).open();
+  }
+  async runSocraticQuestions() {
+    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian10.MarkdownView);
+    if (!activeView) {
+      new import_obsidian10.Notice("Please open a note first");
+      return;
+    }
+    const userNotes = activeView.editor.getValue();
+    if (!userNotes) {
+      new import_obsidian10.Notice("Current note is empty");
+      return;
+    }
+    new SourceInputModal(this.app, async (sourceText) => {
+      await this.socraticQuestionsMode.execute(sourceText, userNotes);
     }).open();
   }
 };

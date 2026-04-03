@@ -12,6 +12,9 @@ AI-powered reading comprehension assistant for Obsidian that analyzes your notes
 - 📝 Analyze your notes against source texts (URL or direct text)
 - 🗺️ Interactive understanding maps
 - 🎯 Comprehension insights and feedback
+- 🤔 Socratic questioning mode:
+  - Static mode: View all provocative questions at once
+  - Interactive mode: Answer questions one by one with AI evaluation and scoring
 
 ## Installation
 

@@ -2,12 +2,14 @@ import { App, Plugin, Notice, MarkdownView } from 'obsidian';
 import { ReadingCoachSettings, DEFAULT_SETTINGS, ReadingCoachSettingTab } from './src/settings';
 import { DepthCheckMode } from './src/modes/depthCheck';
 import { ConnectionFinderMode } from './src/modes/connectionFinder';
+import { SocraticQuestionsMode } from './src/modes/socraticQuestions';
 import { SourceInputModal } from './src/views/sourceInputModal';
 
 export default class ReadingCoachPlugin extends Plugin {
 	settings: ReadingCoachSettings;
 	depthCheckMode: DepthCheckMode;
 	connectionFinderMode: ConnectionFinderMode;
+	socraticQuestionsMode: SocraticQuestionsMode;
 
 	async onload() {
 		await this.loadSettings();
@@ -15,6 +17,7 @@ export default class ReadingCoachPlugin extends Plugin {
 		// Initialize modes
 		this.depthCheckMode = new DepthCheckMode(this);
 		this.connectionFinderMode = new ConnectionFinderMode(this);
+		this.socraticQuestionsMode = new SocraticQuestionsMode(this);
 
 		// Add ribbon icon
 		this.addRibbonIcon('book-open', 'Reading Coach', () => {
@@ -36,6 +39,15 @@ export default class ReadingCoachPlugin extends Plugin {
 			name: 'Reading Coach: Connection Finder',
 			callback: async () => {
 				await this.runConnectionFinder();
+			}
+		});
+
+		// Command: Socratic Questions
+		this.addCommand({
+			id: 'socratic-questions',
+			name: 'Reading Coach: Socratic Questions',
+			callback: async () => {
+				await this.runSocraticQuestions();
 			}
 		});
 
@@ -94,6 +106,26 @@ export default class ReadingCoachPlugin extends Plugin {
 		// Prompt for source material
 		new SourceInputModal(this.app, async (sourceText: string) => {
 			await this.connectionFinderMode.execute(sourceText, userNotes);
+		}).open();
+	}
+
+	private async runSocraticQuestions() {
+		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+		
+		if (!activeView) {
+			new Notice('Please open a note first');
+			return;
+		}
+
+		const userNotes = activeView.editor.getValue();
+		if (!userNotes) {
+			new Notice('Current note is empty');
+			return;
+		}
+
+		// Prompt for source material
+		new SourceInputModal(this.app, async (sourceText: string) => {
+			await this.socraticQuestionsMode.execute(sourceText, userNotes);
 		}).open();
 	}
 }

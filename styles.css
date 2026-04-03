@@ -148,3 +148,243 @@
 	font-family: var(--font-monospace);
 	font-size: 0.9em;
 }
+
+/* Socratic Interactive Modal Styles */
+.socratic-interactive-modal .modal-content {
+	min-width: 600px;
+	max-width: 800px;
+}
+
+.socratic-progress {
+	margin-top: 0.5em;
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+
+.socratic-question-container {
+	padding: 2em;
+	background-color: var(--background-primary);
+}
+
+.socratic-question {
+	padding: 1.5em;
+	background-color: var(--background-secondary);
+	border-radius: 8px;
+	border-left: 4px solid var(--interactive-accent);
+	margin-bottom: 1.5em;
+}
+
+.socratic-question p {
+	margin: 0.5em 0;
+	font-size: 1.05em;
+	line-height: 1.6;
+}
+
+.socratic-answer-container {
+	padding: 0 2em 2em 2em;
+}
+
+.socratic-label {
+	display: block;
+	margin-bottom: 0.5em;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.socratic-answer-input {
+	width: 100%;
+	min-height: 150px;
+	padding: 1em;
+	border: 2px solid var(--background-modifier-border);
+	border-radius: 6px;
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	font-family: var(--font-text);
+	font-size: 1em;
+	line-height: 1.6;
+	resize: vertical;
+	transition: border-color 0.2s;
+}
+
+.socratic-answer-input:focus {
+	outline: none;
+	border-color: var(--interactive-accent);
+}
+
+.socratic-answer-input::placeholder {
+	color: var(--text-muted);
+}
+
+.socratic-score-container {
+	padding: 2em;
+	text-align: center;
+	background-color: var(--background-secondary);
+}
+
+.socratic-score-display {
+	margin: 1em 0;
+}
+
+.socratic-score {
+	display: inline-block;
+	padding: 0.5em 1.5em;
+	font-size: 2em;
+	font-weight: bold;
+	border-radius: 8px;
+	min-width: 100px;
+}
+
+.socratic-score.score-excellent {
+	background-color: rgba(46, 204, 113, 0.2);
+	color: #2ecc71;
+	border: 2px solid #2ecc71;
+}
+
+.socratic-score.score-good {
+	background-color: rgba(52, 152, 219, 0.2);
+	color: #3498db;
+	border: 2px solid #3498db;
+}
+
+.socratic-score.score-fair {
+	background-color: rgba(241, 196, 15, 0.2);
+	color: #f1c40f;
+	border: 2px solid #f1c40f;
+}
+
+.socratic-score.score-poor {
+	background-color: rgba(231, 76, 60, 0.2);
+	color: #e74c3c;
+	border: 2px solid #e74c3c;
+}
+
+.socratic-evaluation-content {
+	padding: 2em;
+	max-height: 50vh;
+	overflow-y: auto;
+}
+
+.socratic-summary-container {
+	padding: 2em;
+	background-color: var(--background-secondary);
+	border-radius: 8px;
+	margin: 2em;
+}
+
+.socratic-overall-score {
+	text-align: center;
+	margin-bottom: 2em;
+}
+
+.socratic-overall-score h3 {
+	margin-bottom: 1em;
+	color: var(--text-normal);
+}
+
+.socratic-score-large {
+	display: inline-block;
+	padding: 1em 2em;
+	font-size: 3em;
+	font-weight: bold;
+	border-radius: 12px;
+	min-width: 150px;
+}
+
+.socratic-stats {
+	text-align: center;
+	color: var(--text-muted);
+}
+
+.socratic-stats p {
+	margin: 0.5em 0;
+	font-size: 1.1em;
+}
+
+.socratic-detailed-results {
+	padding: 2em;
+	max-height: 50vh;
+	overflow-y: auto;
+}
+
+.socratic-detailed-results h3 {
+	margin-bottom: 1.5em;
+	color: var(--text-accent);
+	border-bottom: 2px solid var(--background-modifier-border);
+	padding-bottom: 0.5em;
+}
+
+.socratic-result-block {
+	margin-bottom: 2em;
+	padding: 1.5em;
+	background-color: var(--background-secondary);
+	border-radius: 8px;
+	border-left: 4px solid var(--interactive-accent);
+}
+
+.socratic-result-block h4 {
+	margin-top: 0;
+	margin-bottom: 1em;
+	color: var(--text-accent);
+}
+
+.socratic-result-question {
+	margin-bottom: 1em;
+	padding: 1em;
+	background-color: var(--background-primary);
+	border-radius: 6px;
+}
+
+.socratic-user-answer {
+	padding: 1em;
+	background-color: var(--background-primary);
+	border-radius: 6px;
+	margin: 0.5em 0 1em 0;
+	font-style: italic;
+	color: var(--text-muted);
+}
+
+.socratic-result-evaluation {
+	padding: 1em;
+	background-color: var(--background-primary);
+	border-radius: 6px;
+	margin-top: 0.5em;
+}
+
+.socratic-skipped {
+	color: var(--text-muted);
+	font-style: italic;
+	padding: 1em;
+	background-color: var(--background-primary);
+	border-radius: 6px;
+}
+
+.socratic-mode-option {
+	padding: 1.5em;
+	margin: 1em 0;
+	background-color: var(--background-secondary);
+	border-radius: 8px;
+	border: 2px solid var(--background-modifier-border);
+	transition: border-color 0.2s, transform 0.2s;
+}
+
+.socratic-mode-option:hover {
+	border-color: var(--interactive-accent);
+	transform: translateY(-2px);
+}
+
+.socratic-mode-option h3 {
+	margin-top: 0;
+	margin-bottom: 0.5em;
+	color: var(--text-accent);
+}
+
+.socratic-mode-option p {
+	margin-bottom: 1em;
+	color: var(--text-muted);
+}
+
+.socratic-mode-option button {
+	width: 100%;
+	padding: 0.8em;
+	font-size: 1em;
+}

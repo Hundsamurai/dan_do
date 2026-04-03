@@ -33,4 +33,18 @@ export class Prompts {
 			? PromptsRU.connectionFinder(sourceText, userNotes, vaultNotes)
 			: PromptsEN.connectionFinder(sourceText, userNotes, vaultNotes);
 	}
+
+	static socraticQuestions(sourceText: string, userNotes: string, language: Language = 'en', customPrompt?: string): string {
+		// Use custom prompt if provided
+		if (customPrompt && customPrompt.trim()) {
+			return customPrompt
+				.replace(/{sourceText}/g, sourceText)
+				.replace(/{userNotes}/g, userNotes);
+		}
+		
+		// Otherwise use default
+		return language === 'ru'
+			? PromptsRU.socraticQuestions(sourceText, userNotes)
+			: PromptsEN.socraticQuestions(sourceText, userNotes);
+	}
 }

@@ -13,6 +13,8 @@ export interface ReadingCoachSettings {
 		depthCheckRU: string;
 		connectionFinderEN: string;
 		connectionFinderRU: string;
+		socraticQuestionsEN: string;
+		socraticQuestionsRU: string;
 	};
 	
 	// AI Provider
@@ -37,6 +39,7 @@ export interface ReadingCoachSettings {
 	// Modes
 	depthCheckEnabled: boolean;
 	connectionFinderEnabled: boolean;
+	socraticQuestionsEnabled: boolean;
 	
 	// AI Parameters
 	temperature: number;
@@ -48,7 +51,9 @@ export const DEFAULT_SETTINGS: ReadingCoachSettings = {
 		depthCheckEN: '',
 		depthCheckRU: '',
 		connectionFinderEN: '',
-		connectionFinderRU: ''
+		connectionFinderRU: '',
+		socraticQuestionsEN: '',
+		socraticQuestionsRU: ''
 	},
 	aiProvider: 'openai',
 	openaiApiKey: '',
@@ -61,6 +66,7 @@ export const DEFAULT_SETTINGS: ReadingCoachSettings = {
 	openrouterModel: 'anthropic/claude-2',
 	depthCheckEnabled: true,
 	connectionFinderEnabled: true,
+	socraticQuestionsEnabled: true,
 	temperature: 0.7
 }
 
@@ -256,6 +262,16 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
+		new Setting(containerEl)
+			.setName('Socratic Questions')
+			.setDesc('Generate provocative questions that challenge assumptions')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.socraticQuestionsEnabled)
+				.onChange(async (value) => {
+					this.plugin.settings.socraticQuestionsEnabled = value;
+					await this.plugin.saveSettings();
+				}));
+
 		// Custom Prompts
 		containerEl.createEl('h3', {text: 'Custom Prompts'});
 		containerEl.createEl('p', {
@@ -362,6 +378,56 @@ export class ReadingCoachSettingTab extends PluginSettingTab {
 				.onClick(() => {
 					const defaultPrompt = PromptsRU.connectionFinder('{sourceText}', '{userNotes}', ['{vaultNotes}']);
 					new PromptPreviewModal(this.app, 'Default Connection Finder Prompt (RU)', defaultPrompt).open();
+				}));
+
+		// Socratic Questions EN
+		new Setting(containerEl)
+			.setName('Socratic Questions Prompt (English)')
+			.setDesc('Custom prompt for Socratic Questions mode in English')
+			.addTextArea(text => {
+				text
+					.setPlaceholder('Leave empty for default prompt')
+					.setValue(this.plugin.settings.customPrompts.socraticQuestionsEN)
+					.onChange(async (value) => {
+						this.plugin.settings.customPrompts.socraticQuestionsEN = value;
+						await this.plugin.saveSettings();
+					});
+				text.inputEl.rows = 8;
+				text.inputEl.cols = 50;
+			});
+
+		new Setting(containerEl)
+			.setName('')
+			.addButton(button => button
+				.setButtonText('Show Default EN Prompt')
+				.onClick(() => {
+					const defaultPrompt = PromptsEN.socraticQuestions('{sourceText}', '{userNotes}');
+					new PromptPreviewModal(this.app, 'Default Socratic Questions Prompt (EN)', defaultPrompt).open();
+				}));
+
+		// Socratic Questions RU
+		new Setting(containerEl)
+			.setName('Socratic Questions Prompt (Russian)')
+			.setDesc('Custom prompt for Socratic Questions mode in Russian')
+			.addTextArea(text => {
+				text
+					.setPlaceholder('Оставьте пустым для промпта по умолчанию')
+					.setValue(this.plugin.settings.customPrompts.socraticQuestionsRU)
+					.onChange(async (value) => {
+						this.plugin.settings.customPrompts.socraticQuestionsRU = value;
+						await this.plugin.saveSettings();
+					});
+				text.inputEl.rows = 8;
+				text.inputEl.cols = 50;
+			});
+
+		new Setting(containerEl)
+			.setName('')
+			.addButton(button => button
+				.setButtonText('Show Default RU Prompt')
+				.onClick(() => {
+					const defaultPrompt = PromptsRU.socraticQuestions('{sourceText}', '{userNotes}');
+					new PromptPreviewModal(this.app, 'Default Socratic Questions Prompt (RU)', defaultPrompt).open();
 				}));
 	}
 }
